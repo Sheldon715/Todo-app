@@ -1,45 +1,109 @@
 body {
-    position: relative;
-    margin: 0;
+  position: relative;
+  margin: 0;
+  background-color: #fafafa;
 }
 
 .light-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    width: 100%;
-    height: 300px;
-    z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 0;
+  width: 100%;
+  height: 300px;
+  z-index: 1;
 
-    background: 
-        url(../assets/images/bg-desktop-light.jpg),
-        linear-gradient(
-            135deg,
-            hsl(192, 100%, 67%),
-            hsl(280, 87%, 65%)
-        );
+  background: url(../assets/images/bg-desktop-light.jpg),
+    linear-gradient(135deg, hsl(192, 100%, 67%), hsl(280, 87%, 65%));
 
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: overlay;
+  background-size: cover;
+  background-position: center;
+  background-blend-mode: overlay;
 }
 
-
-
 .todo-list {
-    position: relative;
-    z-index: 10;
-    padding-top: 36px;
-    margin-right: 414px;
-    margin-left: 486px;
+  position: relative;
+  z-index: 10;
+  padding-top: 36px;
+  margin-right: 414px;
+  margin-left: 486px;
 }
 
 .title {
-    color: white;
-    font-size: 40px;
-    font-family: "Outfit", sans-serif;
-    font-weight: 700;
-    letter-spacing: 1rem;
+  color: white;
+  font-size: 40px;
+  font-family: "Outfit", sans-serif;
+  font-weight: 600;
+  letter-spacing: 1rem;
+  margin-bottom: 48px;
 }
 
+.search-bar {
+  height: 64px;
+  width: 540px;
+  background-color: white;
+  border-radius: 5px;
+  margin-bottom: 24px;
+}
+
+ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex: 1;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  background-color: white;
+  width: 540px;
+  border-radius: 5px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+li {
+  border-bottom: 1px solid rgb(200, 203, 231);
+  color: #494c6b;
+  font-family: "Josefin Sans", sans-serif;
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.25px;
+  line-height: 100%;
+  padding: 24px 24px;
+}
+
+.bottom-filter {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  letter-spacing: -0.25px;
+  line-height: 100%;
+  font-family: "Josefin Sans", sans-serif;
+  color: #9495a5;
+  padding: 28px 24px;
+  
+
+}
+
+.item-left {
+  font-weight: 400;
+}
+
+.filter {
+  font-weight: bold;
+}
+.remove {
+  font-weight: 400;
+}
+
+.drag {
+  font-size: 12px;
+  letter-spacing: -0.25px;
+  line-height: 100%;
+  margin: 0 20px;
+  font-family: "Josefin Sans", sans-serif;
+  color: #9495a5;
+  text-align: center;
+}
