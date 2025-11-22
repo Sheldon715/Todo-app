@@ -1,8 +1,10 @@
+import React from "react";
+import HeaderBackground from "./components/HeaderBackground";
 
 function App() {
   return (
     <>
-      <div className="light-background"></div>
+      <HeaderBackground />
 
       <div className="todo-list">
         <div className="title">TODO</div>
