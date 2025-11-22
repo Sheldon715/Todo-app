@@ -13,7 +13,7 @@ body {
   height: 300px;
   z-index: 1;
 
-  background: url(../assets/images/bg-desktop-light.jpg),
+  background: url(./assets/images/bg-desktop-light.jpg),
     linear-gradient(135deg, hsl(192, 100%, 67%), hsl(280, 87%, 65%));
 
   background-size: cover;
@@ -102,7 +102,7 @@ li {
   font-size: 12px;
   letter-spacing: -0.25px;
   line-height: 100%;
-  margin: 0 20px;
+  margin:180px;
   font-family: "Josefin Sans", sans-serif;
   color: #9495a5;
   text-align: center;
