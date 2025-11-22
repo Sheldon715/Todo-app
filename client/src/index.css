@@ -83,8 +83,6 @@ li {
   font-family: "Josefin Sans", sans-serif;
   color: #9495a5;
   padding: 28px 24px;
-  
-
 }
 
 .item-left {
@@ -102,7 +100,7 @@ li {
   font-size: 12px;
   letter-spacing: -0.25px;
   line-height: 100%;
-  margin:180px;
+  margin: 180px;
   font-family: "Josefin Sans", sans-serif;
   color: #9495a5;
   text-align: center;
