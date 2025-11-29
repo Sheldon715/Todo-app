@@ -1,3 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
 body {
   position: relative;
   margin: 0;
@@ -61,6 +66,7 @@ ul {
   width: 540px;
   border-radius: 5px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 8px 20px rgba(0, 0, 0, 0.12);
+  list-style: none;
 }
 
 li {
@@ -104,4 +110,20 @@ li {
   font-family: "Josefin Sans", sans-serif;
   color: #9495a5;
   text-align: center;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  color: #9495a5;
+  font-family: "Josefin Sans", sans-serif;
+  font-size: 18px;
+  letter-spacing: -0.25px;
+  line-height: 100%;
+  margin: 24px;
+
+}
+
+.completed {
+  text-decoration: line-through; opacity: 0.6;
 }

@@ -27,6 +27,17 @@ function App() {
     });
   }
 
+  function toggleTodo(id) {
+    setTodos(prev => prev.map(todo => 
+      todo.id === id ?
+      {...todo, completed: !todo.completed} :
+      todo
+    ))
+
+  }
+  
+
+
   return (
     <>
       <HeaderBackground />
@@ -34,7 +45,7 @@ function App() {
       <div className="todo-list">
         <TodoHeader onAdd={addTodo} />
         <div className="list-item">
-          <TodoList todo={todos} />
+          <TodoList todo={todos} onToggle={toggleTodo}/>
           <TodoFooter />
         </div>
         <DragHint />

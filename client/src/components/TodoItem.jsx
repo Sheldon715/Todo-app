@@ -1,9 +1,12 @@
 import React from "react";
 
-function TodoItem( {text, completed} ) {
+function TodoItem( {id, text, completed, onToggle} ) {
   return (
-    <li>
-      <input type="checkbox" onComplete={completed}/>
+    <li className={completed ? "completed" : ""}>
+      <label className="checkbox-wrapper">
+        <input type="checkbox" checked={completed} onChange={() => onToggle(id)}/>
+        <span className="custom-checkbox"></span>
+      </label>
       <span>{text}</span>
     </li>
   );
