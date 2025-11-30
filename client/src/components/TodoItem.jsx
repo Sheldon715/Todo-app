@@ -6,8 +6,8 @@ function TodoItem( {id, text, completed, onToggle} ) {
       <label className="checkbox-wrapper">
         <input type="checkbox" checked={completed} onChange={() => onToggle(id)}/>
         <span className="custom-checkbox"></span>
+        <span>{text}</span>
       </label>
-      <span>{text}</span>
     </li>
   );
 }

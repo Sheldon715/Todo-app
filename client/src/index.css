@@ -127,3 +127,36 @@ li {
 .completed {
   text-decoration: line-through; opacity: 0.6;
 }
+
+.checkbox-wrapper input{
+  position: absolute;
+  opacity: 0;
+  height: 0;
+  width: 0;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.custom-checkbox {
+  height: 24px;
+  width: 24px;
+  border: 1.5px solid #C8CBE7;
+  border-radius: 50%;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.checkbox-wrapper input:checked + .custom-checkbox {
+  background-image: url("./assets/images/icon-check.svg"),
+                    linear-gradient(135deg, hsl(192, 100%, 55%), hsl(280, 100%, 57%));
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, center;
+  background-size: 60%, cover;
+  border: none;
+  padding: 1.5px;
+
+}
