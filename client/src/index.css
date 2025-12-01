@@ -180,3 +180,8 @@ form {
 input {
   caret-color: #3A7CFD;
 }
+
+.active-filter {
+  color: #3A7CFD;
+  transition: color 0.2s ease;
+}
