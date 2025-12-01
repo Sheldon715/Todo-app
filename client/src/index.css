@@ -41,6 +41,7 @@ body {
   font-weight: 600;
   letter-spacing: 1rem;
   margin-bottom: 48px;
+  user-select: none;
 }
 
 .search-bar {
@@ -98,8 +99,15 @@ li {
 .filter {
   font-weight: bold;
 }
+
+.filter span{
+  padding: 8px;
+  cursor: pointer;
+}
+
 .remove {
   font-weight: 400;
+  cursor: pointer;
 }
 
 .drag {
@@ -159,4 +167,16 @@ li {
   border: none;
   padding: 1.5px;
 
+}
+
+*:not(input):not(textarea) {
+  caret-color: transparent;
+}
+
+form {
+  user-select: none;
+}
+
+input {
+  caret-color: #3A7CFD;
 }

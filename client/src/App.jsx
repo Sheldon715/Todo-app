@@ -15,6 +15,8 @@ function App() {
     { id: 6, text: "Complete Todo App on Frontend Mentor", completed: false },
   ]);
 
+  const [filter, setFilter] = useState("all");
+
   function addTodo(inputText) {
     const newTodo = {
       id: crypto.randomUUID(),
@@ -33,10 +35,19 @@ function App() {
       {...todo, completed: !todo.completed} :
       todo
     ))
-
   }
-  
 
+  function clearCompleted() {
+    setTodos(prev => prev.filter((todo) => !todo.completed));
+  }
+
+  const filteredTodo = todos.filter((todo) => {
+    if (filter === "active") return !todo.completed;
+    if (filter === "completed") return todo.completed;
+    return true;
+  });
+  
+  const itemLeft = todos.filter((todo) => !todo.completed).length;
 
   return (
     <>
@@ -45,8 +56,13 @@ function App() {
       <div className="todo-list">
         <TodoHeader onAdd={addTodo} />
         <div className="list-item">
-          <TodoList todo={todos} onToggle={toggleTodo}/>
-          <TodoFooter />
+          <TodoList todo={filteredTodo} onToggle={toggleTodo}/>
+          <TodoFooter 
+            itemLeft={itemLeft}
+            filter={filter}
+            setFilter={setFilter}
+            onClearCompleted={clearCompleted}
+          />
         </div>
         <DragHint />
       </div>

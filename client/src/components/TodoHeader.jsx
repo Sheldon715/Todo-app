@@ -18,7 +18,7 @@ function TodoHeader(props) {
 
   return (
     <>
-      <div className="title text-blue-500">TODO</div>
+      <div className="title">TODO</div>
       <div className="search-bar">
         <form onSubmit={handleSubmit}>
           <input
