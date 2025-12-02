@@ -21,10 +21,17 @@ function App() {
   });
 
   useEffect(() => {
-    localStorage.setItem("todo-app-filter", JSON.stringify(filter));
+    localStorage.setItem("todo-app-filter", filter);
   }, [filter])
 
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem("todo-app-theme");
+    return saved || "light";
+  });
+
+  useEffect(() => {
+    localStorage.setItem("todo-app-theme", theme);
+  }, [theme])
 
   const toggleTheme = () => {
     setTheme(prev => (prev === "light" ? "dark" : "light"));
