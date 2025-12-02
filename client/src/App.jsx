@@ -16,6 +16,12 @@ function App() {
   ]);
 
   const [filter, setFilter] = useState("all");
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = () => {
+    setTheme(prev => (prev === "light" ? "dark" : "light"));
+  };
+
 
   function addTodo(inputText) {
     const newTodo = {
@@ -49,12 +55,17 @@ function App() {
   
   const itemLeft = todos.filter((todo) => !todo.completed).length;
 
+
   return (
-    <>
-      <HeaderBackground />
+    <div className={`app ${theme}`}>
+      <HeaderBackground theme={theme} />
 
       <div className="todo-list">
-        <TodoHeader onAdd={addTodo} />
+        <TodoHeader 
+          onAdd={addTodo} 
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
         <div className="list-item">
           <TodoList todo={filteredTodo} onToggle={toggleTodo}/>
           <TodoFooter 
@@ -64,9 +75,9 @@ function App() {
             onClearCompleted={clearCompleted}
           />
         </div>
-        <DragHint />
       </div>
-    </>
+      <DragHint />
+    </div>
   );
 }
 

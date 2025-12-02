@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import iconSun from "../assets/images/icon-sun.svg"
+import iconMoon from "../assets/images/icon-moon.svg"
 
-function TodoHeader(props) {
+function TodoHeader({ onAdd, theme, onToggleTheme }) {
   const [inputValue, setInputValue] = useState("");
 
   function handleChange(event) {
@@ -11,14 +13,27 @@ function TodoHeader(props) {
   function handleSubmit(event) {
     event.preventDefault();
     if (inputValue) {
-      props.onAdd(inputValue);
+      onAdd(inputValue);
       setInputValue("");
     }
   }
 
   return (
     <>
-      <div className="title">TODO</div>
+      <div className="theme-title">
+        <div className="title">TODO</div>
+        <button
+          type="button"
+          className="theme-button"
+          onClick={onToggleTheme}
+        >
+
+          <img 
+            src={theme==="light" ? iconMoon : iconSun} 
+            alt={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+          />
+        </button>
+      </div>
       <div className="search-bar">
         <form onSubmit={handleSubmit}>
           <input
