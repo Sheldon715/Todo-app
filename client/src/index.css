@@ -109,7 +109,40 @@ li {
   letter-spacing: -0.25px;
   line-height: 100%;
   padding: 24px 24px;
+  transition: background-color 0.2s ease, box-shadow 0.2 ease, 
+    transform 0.1s ease, opacity 0.1s ease;
 }
+
+.text-drag {
+  cursor: grab;
+}
+
+.dragging {
+  opacity: 0.6;
+  transform: scale(0.98);
+  cursor: grabbing;
+}
+
+.drop-target {
+  position: relative;
+  border-bottom-color: transparent;
+}
+
+.drop-target::after {
+  content: "";
+  position: absolute;
+  left: 24px;
+  right: 24px;
+  bottom: 0;
+  height: 2px;
+  background-color: #494c6b;
+  border-radius: 999px;
+}
+
+.app.dark .drop-target::after{
+  background-color: #E3E4F1;
+}
+
 
 .app.dark li {
   color: #E3E4F1;

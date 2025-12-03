@@ -70,6 +70,23 @@ function App() {
   
   const itemLeft = todos.filter((todo) => !todo.completed).length;
 
+  function handleRecorder(sourceId, targetId) {
+    if (sourceId === targetId)  return; 
+
+    setTodos((prevTodo) => {
+      const sourceIndex = prevTodo.findIndex(t => t.id === sourceId);
+      const targetIndex = prevTodo.findIndex(t => t.id === targetId);
+
+      if (sourceIndex === -1 || targetIndex === -1) return prevTodo; 
+
+      const updated = [...prevTodo];
+      const [moved] = updated.splice(sourceIndex, 1);
+      updated.splice(targetIndex, 0, moved)
+      return updated;
+    })
+  }
+
+
 
   return (
     <div className={`app ${theme}`}>
@@ -82,7 +99,11 @@ function App() {
           onToggleTheme={toggleTheme}
         />
         <div className="list-item">
-          <TodoList todo={filteredTodo} onToggle={toggleTodo}/>
+          <TodoList 
+            todo={filteredTodo} 
+            onToggle={toggleTodo}
+            onRecorder={handleRecorder}
+          />
           <TodoFooter 
             itemLeft={itemLeft}
             filter={filter}

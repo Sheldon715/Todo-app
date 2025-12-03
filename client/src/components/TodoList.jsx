@@ -1,7 +1,7 @@
 import React from "react";
 import TodoItem from "./TodoItem";
 
-function TodoList({ todo, onToggle }) {
+function TodoList({ todo, onToggle, onRecorder }) {
   return (
     <ul>
       {todo.map((item) => {
@@ -12,6 +12,7 @@ function TodoList({ todo, onToggle }) {
             text={item.text}
             completed={item.completed}
             onToggle={onToggle}
+            onRecorder={onRecorder}
           />
         );
       })}
