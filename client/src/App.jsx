@@ -86,6 +86,10 @@ function App() {
     });
   }
 
+  function handleDelete(id) {
+    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  }
+
   return (
     <div className={`app ${theme}`}>
       <HeaderBackground theme={theme} />
@@ -97,6 +101,7 @@ function App() {
             todo={filteredTodo}
             onToggle={toggleTodo}
             onRecorder={handleRecorder}
+            onDelete={handleDelete}
           />
           <TodoFooter
             itemLeft={itemLeft}

@@ -103,6 +103,10 @@ li {
   padding: 24px 24px;
   transition: background-color 0.2s ease, box-shadow 0.2 ease,
     transform 0.1s ease, opacity 0.1s ease;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .text-drag {
@@ -221,6 +225,9 @@ li {
   display: flex;
   align-items: center;
   gap: 24px;
+
+  flex: 1;
+  min-width: 0;
 }
 
 .custom-checkbox {
@@ -277,6 +284,38 @@ input {
   cursor: pointer;
 }
 
+.delete-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  cursor: pointer;
+
+  opacity: 0;
+  pointer-events: none; 
+  transition: opacity 0.2s ease;
+}
+
+.delete-btn img {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+li:hover .delete-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
 @media (max-width: 1024px) {
   .todo-list {
     padding-top: 40px;
@@ -311,7 +350,7 @@ input {
 @media (max-width: 768px) {
   .filter-desktop {display: none;}
 
-    .mobile-filter-card {
+  .mobile-filter-card {
     display: block;
     margin-top: 16px;
 
@@ -321,6 +360,10 @@ input {
       0 8px 20px rgba(0, 0, 0, 0.12);
 
     padding: 8px 24px;
+  }
+
+  .app.dark .mobile-filter-card {
+    background-color: #25273d;
   }
 
 
@@ -384,9 +427,12 @@ input {
   li {
     padding: 16px 20px;
     font-size: 14px;
+    line-height: 20px;
   }
 
   .checkbox-wrapper {
+    display: flex;
+    align-items: center;
     gap: 16px;
   }
 
@@ -426,5 +472,15 @@ input {
   .drag {
     margin: 40px 0;
     font-size: 12px;
+  }
+
+  .delete-btn {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .delete-btn img {
+    width: 16px;
+    height: 16px;
   }
 }

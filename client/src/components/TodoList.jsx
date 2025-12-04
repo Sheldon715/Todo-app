@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import TodoItem from "./TodoItem";
 
-function TodoList({ todo, onToggle, onRecorder }) {
+function TodoList({ todo, onToggle, onRecorder, onDelete }) {
   return (
     <ul>
       {todo.map((item) => {
@@ -14,6 +14,7 @@ function TodoList({ todo, onToggle, onRecorder }) {
             completed={item.completed}
             onToggle={onToggle}
             onRecorder={onRecorder}
+            onDelete={onDelete}
           />
         );
       })}
@@ -30,6 +31,7 @@ TodoList.propTypes = {
   ).isRequired,
   onToggle: PropTypes.func.isRequired,
   onRecorder: PropTypes.func.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 export default TodoList;

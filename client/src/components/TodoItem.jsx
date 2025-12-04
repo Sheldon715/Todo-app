@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
+import iconCross from "../assets/images/icon-cross.svg"
 
-function TodoItem({ id, text, completed, onToggle, onRecorder }) {
+function TodoItem({ id, text, completed, onToggle, onRecorder, onDelete }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -64,6 +65,10 @@ function TodoItem({ id, text, completed, onToggle, onRecorder }) {
         <span className="custom-checkbox"></span>
         <span className="text-drag">{text}</span>
       </label>
+
+      <button className="delete-btn" onClick={() => onDelete(id)}>
+        <img src={iconCross} alt="delete"/>
+      </button>
     </li>
   );
 }
@@ -72,7 +77,8 @@ TodoItem.propTypes = {
   text: PropTypes.string.isRequired,
   completed: PropTypes.bool.isRequired,
   onToggle: PropTypes.func.isRequired,
-  onRecorder: PropTypes.func,
+  onRecorder: PropTypes.func.isRequired,
+  onDelete: PropTypes.func
 };
 
 export default TodoItem;
