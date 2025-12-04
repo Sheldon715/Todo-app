@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import TodoItem from "./TodoItem";
 
 function TodoList({ todo, onToggle, onRecorder }) {
@@ -19,5 +20,16 @@ function TodoList({ todo, onToggle, onRecorder }) {
     </ul>
   );
 }
+TodoList.propTypes = {
+  todo: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      text: PropTypes.string.isRequired,
+      completed: PropTypes.bool.isRequired,
+    })
+  ).isRequired,
+  onToggle: PropTypes.func.isRequired,
+  onRecorder: PropTypes.func.isRequired,
+};
 
 export default TodoList;

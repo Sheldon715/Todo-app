@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import iconSun from "../assets/images/icon-sun.svg"
-import iconMoon from "../assets/images/icon-moon.svg"
+import PropTypes from "prop-types";
+import iconSun from "../assets/images/icon-sun.svg";
+import iconMoon from "../assets/images/icon-moon.svg";
 
 function TodoHeader({ onAdd, theme, onToggleTheme }) {
   const [inputValue, setInputValue] = useState("");
@@ -22,15 +23,12 @@ function TodoHeader({ onAdd, theme, onToggleTheme }) {
     <>
       <div className="theme-title">
         <div className="title">TODO</div>
-        <button
-          type="button"
-          className="theme-button"
-          onClick={onToggleTheme}
-        >
-
-          <img 
-            src={theme==="light" ? iconMoon : iconSun} 
-            alt={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+        <button type="button" className="theme-button" onClick={onToggleTheme}>
+          <img
+            src={theme === "light" ? iconMoon : iconSun}
+            alt={
+              theme === "light" ? "Switch to dark mode" : "Switch to light mode"
+            }
           />
         </button>
       </div>
@@ -48,5 +46,10 @@ function TodoHeader({ onAdd, theme, onToggleTheme }) {
     </>
   );
 }
+TodoHeader.propTypes = {
+  onAdd: PropTypes.func.isRequired,
+  theme: PropTypes.string.isRequired,
+  onToggleTheme: PropTypes.func.isRequired,
+};
 
 export default TodoHeader;
