@@ -131,14 +131,13 @@ li {
   transform: scale(0.99);
   cursor: grabbing;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-  background-color: #ffffff; 
+  background-color: #ffffff;
 }
 
 .app.dark .dragging {
   box-shadow: 0 18px 36px rgba(0, 0, 0, 0.7);
   background-color: #25273d;
 }
-
 
 .drop-target {
   position: relative;
@@ -184,7 +183,6 @@ li {
   user-select: none;
 }
 
-
 .filter span {
   padding: 8px;
   cursor: pointer;
@@ -227,7 +225,9 @@ li {
   opacity: 0.8;
 }
 
-.mode-image:active {transform: scale(0.97); }
+.mode-image:active {
+  transform: scale(0.97);
+}
 
 .drag {
   font-size: 12px;
@@ -284,7 +284,8 @@ li {
   border-radius: 50%;
   display: inline-block;
   cursor: pointer;
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .app.dark .custom-checkbox {
@@ -293,8 +294,7 @@ li {
 
 .checkbox-wrapper input:not(:checked) + .custom-checkbox:hover {
   border: 1.5px solid transparent;
-  background-image: 
-    linear-gradient(white, white),
+  background-image: linear-gradient(white, white),
     linear-gradient(135deg, hsl(192, 100%, 55%), hsl(280, 100%, 57%));
   background-origin: border-box;
   background-clip: padding-box, border-box;
@@ -302,8 +302,7 @@ li {
 
 .app.dark .checkbox-wrapper input:not(:checked) + .custom-checkbox:hover {
   border: 1.5px solid transparent;
-  background-image: 
-    linear-gradient(#25273d, #25273d),
+  background-image: linear-gradient(#25273d, #25273d),
     linear-gradient(135deg, hsl(192, 100%, 55%), hsl(280, 100%, 57%));
   background-origin: border-box;
   background-clip: padding-box, border-box;
@@ -366,7 +365,7 @@ input {
   cursor: pointer;
 
   opacity: 0;
-  pointer-events: none; 
+  pointer-events: none;
   transition: opacity 0.2s ease;
 }
 
@@ -423,11 +422,25 @@ li:hover .delete-btn {
   }
 }
 
-.filter-desktop {display: block;}
-.mobile-filter-card {display: none;}
+.filter-desktop {
+  display: block;
+}
+.mobile-filter-card {
+  display: none;
+}
 
 @media (max-width: 768px) {
-  .filter-desktop {display: none;}
+  .app {
+    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+  }
+
+  .filter-desktop {
+    display: none;
+  }
 
   .mobile-filter-card {
     display: block;
@@ -443,9 +456,7 @@ li:hover .delete-btn {
   .app.dark .mobile-filter-card {
     background-color: #25273d;
     box-shadow: 0 18px 30px rgba(0, 0, 0, 0.7);
-
   }
-
 
   .mobile-filter-card .filter {
     display: flex;
@@ -453,7 +464,6 @@ li:hover .delete-btn {
     gap: 16px;
     font-size: 14px;
   }
-
 
   .light-background {
     height: 200px;
@@ -478,6 +488,9 @@ li:hover .delete-btn {
     padding-top: 24px;
     padding-inline: 24px;
     max-width: 327px;
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 16px;  
   }
 
   .title {
@@ -553,9 +566,8 @@ li:hover .delete-btn {
   }
 
   .drag {
-    margin: 40px 0;
-    font-size: 12px;
-
+    margin: 24px 0 16px;
+    font-size: 11px;
   }
 
   .delete-btn {

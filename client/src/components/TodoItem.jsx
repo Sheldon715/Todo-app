@@ -9,10 +9,6 @@ function TodoItem({
   onToggle,
   onRecorder,
   onDelete,
-  touchDraggingId,
-  onTouchDragStart,
-  onTouchDragOver,
-  onTouchDragEnd,
 }) {
   const [isDragging, setIsDragging] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -54,38 +50,10 @@ function TodoItem({
     setIsDragOver(false);
   };
 
-  const handlePointerDown = (event) => {
-    if (event.pointerType !== "touch") return;
-    if (!onTouchDragStart) return;
-
-    onTouchDragStart(id);
-  };
-
-  const handlePointerUp = (event) => {
-    if (event.pointerType !== "touch") return;
-    if (!onTouchDragEnd) return;
-
-    onTouchDragEnd(id);
-  };
-
-  const handlePointerEnter = (event) => {
-    if (event.pointerType !== "touch") return;
-    if (!touchDraggingId) return;
-    if (touchDraggingId === id) return;
-
-    setIsDragOver(true);
-    onTouchDragOver?.(id); 
-  };
-
-  const handlePointerLeave = (event) => {
-    if (event.pointerType !== "touch") return;
-    setIsDragOver(false);
-  };
-
   return (
     <li
       className={`${completed ? "completed" : ""} 
-        ${(isDragging || touchDraggingId === id) ? "dragging" : ""}
+        ${isDragging ? "dragging" : ""}
         ${isDragOver ? "drop-target" : ""}`}
       draggable
       onDragStart={handleDragStart}
@@ -94,10 +62,6 @@ function TodoItem({
       onDragEnd={handleDragEnd}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
-      onPointerDown={handlePointerDown}
-      onPointerUp={handlePointerUp}
-      onPointerEnter={handlePointerEnter}
-      onPointerLeave={handlePointerLeave}
     >
       <label className="checkbox-wrapper">
         <input

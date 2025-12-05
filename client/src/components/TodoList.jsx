@@ -1,38 +1,11 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import PropTypes from "prop-types";
 import TodoItem from "./TodoItem";
 
 function TodoList({ todo, onToggle, onRecorder, onDelete }) {
-  const [touchDraggingId, setTouchDraggingId] = useState(null);
-  const [touchDragOverId, setTouchDragOverId] = useState(null);
-  const listRef = useRef(null);
-
-  const handleDragStart = (id) => {
-    setTouchDraggingId(id);
-  };
-
-  const handleTouchDragOver = (id) => {
-    setTouchDragOverId(id);
-  };
-
-  const handleTouchDragEnd = (targetId) => {
-    if (!touchDraggingId) return;
-
-    const dropTarget = targetId ?? touchDragOverId;
-    if (!dropTarget || dropTarget === touchDraggingId) {
-      setTouchDraggingId(null);
-      setTouchDragOverId(null);
-      return;
-    }
-
-    onRecorder(touchDraggingId, dropTarget);
-
-    setTouchDraggingId(null);
-    setTouchDragOverId(null);
-  };
 
   return (
-    <ul ref={listRef}>
+    <ul>
       {todo.map((item) => {
         return (
           <TodoItem
@@ -43,10 +16,6 @@ function TodoList({ todo, onToggle, onRecorder, onDelete }) {
             onToggle={onToggle}
             onRecorder={onRecorder}
             onDelete={onDelete}
-            touchDraggingId={touchDraggingId}
-            onTouchDragStart={handleDragStart}
-            onTouchDragOver={handleTouchDragOver}
-            onTouchDragEnd={handleTouchDragEnd}
           />
         );
       })}
