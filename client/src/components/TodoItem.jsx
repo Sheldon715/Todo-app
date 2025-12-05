@@ -1,13 +1,23 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import iconCross from "../assets/images/icon-cross.svg"
+import iconCross from "../assets/images/icon-cross.svg";
 
-function TodoItem({ id, text, completed, onToggle, onRecorder, onDelete }) {
+function TodoItem({
+  id,
+  text,
+  completed,
+  onToggle,
+  onRecorder,
+  onDelete,
+  touchDraggingId,
+  onTouchDragStart,
+  onTouchDragEnd,
+}) {
   const [isDragging, setIsDragging] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDragStart = (event) => {
-    event.dataTransfer.effecteAllowed = "move";
+    event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", id);
     setIsDragging(true);
   };
@@ -43,6 +53,33 @@ function TodoItem({ id, text, completed, onToggle, onRecorder, onDelete }) {
     setIsDragOver(false);
   };
 
+  const handlePointerDown = (event) => {
+    if (event.pointerType !== "touch") return;
+    if (!onTouchDragStart) return;
+
+    onTouchDragStart(id);
+  };
+
+  const handlePointerUp = (event) => {
+    if (event.pointerType !== "touch") return;
+    if (!onTouchDragEnd) return;
+
+    onTouchDragEnd(id);
+  };
+
+  const handlePointerEnter = (event) => {
+    if (event.pointerType !== "touch") return;
+    if (!touchDraggingId) return;
+    if (touchDraggingId === id) return;
+
+    setIsDragOver(true);
+  };
+
+  const handlePointerLeave = (event) => {
+    if (event.pointerType !== "touch") return;
+    setIsDragOver(false);
+  };
+
   return (
     <li
       className={`${completed ? "completed" : ""} 
@@ -55,6 +92,10 @@ function TodoItem({ id, text, completed, onToggle, onRecorder, onDelete }) {
       onDragEnd={handleDragEnd}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
     >
       <label className="checkbox-wrapper">
         <input
@@ -67,7 +108,7 @@ function TodoItem({ id, text, completed, onToggle, onRecorder, onDelete }) {
       </label>
 
       <button className="delete-btn" onClick={() => onDelete(id)}>
-        <img src={iconCross} alt="delete"/>
+        <img src={iconCross} alt="delete" />
       </button>
     </li>
   );
@@ -78,7 +119,7 @@ TodoItem.propTypes = {
   completed: PropTypes.bool.isRequired,
   onToggle: PropTypes.func.isRequired,
   onRecorder: PropTypes.func.isRequired,
-  onDelete: PropTypes.func
+  onDelete: PropTypes.func,
 };
 
 export default TodoItem;

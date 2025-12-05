@@ -25,6 +25,7 @@ function TodoHeader({ onAdd, theme, onToggleTheme }) {
         <div className="title">TODO</div>
         <button type="button" className="theme-button" onClick={onToggleTheme}>
           <img
+            className="mode-image"
             src={theme === "light" ? iconMoon : iconSun}
             alt={
               theme === "light" ? "Switch to dark mode" : "Switch to light mode"
