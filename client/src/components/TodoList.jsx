@@ -4,21 +4,31 @@ import TodoItem from "./TodoItem";
 
 function TodoList({ todo, onToggle, onRecorder, onDelete }) {
   const [touchDraggingId, setTouchDraggingId] = useState(null);
+  const [touchDragOverId, setTouchDragOverId] = useState(null);
   const listRef = useRef(null);
 
   const handleDragStart = (id) => {
     setTouchDraggingId(id);
-  }
+  };
 
- const handleTouchDragEnd = (targetId) => {
+  const handleTouchDragOver = (id) => {
+    setTouchDragOverId(id);
+  };
+
+  const handleTouchDragEnd = (targetId) => {
     if (!touchDraggingId) return;
-    if (touchDraggingId === targetId) {
+
+    const dropTarget = targetId ?? touchDragOverId;
+    if (!dropTarget || dropTarget === touchDraggingId) {
       setTouchDraggingId(null);
+      setTouchDragOverId(null);
       return;
     }
 
-    onRecorder(touchDraggingId, targetId);
+    onRecorder(touchDraggingId, dropTarget);
+
     setTouchDraggingId(null);
+    setTouchDragOverId(null);
   };
 
   return (
@@ -35,6 +45,7 @@ function TodoList({ todo, onToggle, onRecorder, onDelete }) {
             onDelete={onDelete}
             touchDraggingId={touchDraggingId}
             onTouchDragStart={handleDragStart}
+            onTouchDragOver={handleTouchDragOver}
             onTouchDragEnd={handleTouchDragEnd}
           />
         );

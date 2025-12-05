@@ -11,6 +11,7 @@ function TodoItem({
   onDelete,
   touchDraggingId,
   onTouchDragStart,
+  onTouchDragOver,
   onTouchDragEnd,
 }) {
   const [isDragging, setIsDragging] = useState(false);
@@ -73,6 +74,7 @@ function TodoItem({
     if (touchDraggingId === id) return;
 
     setIsDragOver(true);
+    onTouchDragOver?.(id); 
   };
 
   const handlePointerLeave = (event) => {
@@ -83,7 +85,7 @@ function TodoItem({
   return (
     <li
       className={`${completed ? "completed" : ""} 
-        ${isDragging ? "dragging" : ""}
+        ${(isDragging || touchDraggingId === id) ? "dragging" : ""}
         ${isDragOver ? "drop-target" : ""}`}
       draggable
       onDragStart={handleDragStart}
