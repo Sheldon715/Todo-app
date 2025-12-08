@@ -5,6 +5,13 @@ import TodoList from "./components/TodoList";
 import TodoFooter from "./components/TodoFooter";
 import DragHint from "./components/DragHint";
 import FilterTabs from "./components/FilterTab";
+import {
+  fetchTodosApi,
+  createTodoApi,
+  updateTodoApi,
+  deleteTodoApi,
+  clearCompletedApi,
+} from "./api/todo";
 
 function App() {
   const [todos, setTodos] = useState([]);
@@ -15,12 +22,7 @@ function App() {
       setLoading(true);
 
       try {
-        const res = await fetch("http://localhost:4000/api/todos");
-        if (!res.ok) {
-          console.error("Failed to fetch", res.status);
-          return;
-        }
-        const data = await res.json();
+        const data = await fetchTodosApi();
         setTodos(data);
       } catch (error) {
         console.error("Error fetching todos:", error);
@@ -55,25 +57,8 @@ function App() {
   };
 
   async function addTodo(inputText) {
-    const trimmed = inputText.trim();
-    if (!trimmed) return;
-
     try {
-      const res = await fetch("http://localhost:4000/api/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text: trimmed }),
-      });
-
-      if (!res.ok) {
-        console.error("Failed to create todo:", res.status);
-        return;
-      }
-
-      const createTodo = await res.json();
-
+      const createTodo = await createTodoApi(inputText);
       setTodos((prev) => [...prev, createTodo]);
     } catch (error) {
       console.error("Error createing todo:", error);
@@ -87,20 +72,7 @@ function App() {
     const nextCompleted = !current.completed;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/todos/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ completed: nextCompleted }),
-      });
-
-      if (!res.ok) {
-        console.error("Failed to toggle todo:", res.status);
-        return;
-      }
-
-      const updated = await res.json();
+      const updated = await updateTodoApi(id, { completed: nextCompleted });
 
       setTodos((prev) => prev.map((todo) => (todo.id === id ? updated : todo)));
     } catch (error) {
@@ -110,15 +82,7 @@ function App() {
 
   async function clearCompleted() {
     try {
-      const res = await fetch("http://localhost:4000/api/todos", {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        console.error("Failed to clear completed todo:", res.status);
-        return;
-      }
-
+      await clearCompletedApi();
       setTodos((prev) => prev.filter((todo) => !todo.completed));
     } catch (error) {
       console.error("Error clear completed todo:", error);
@@ -151,15 +115,7 @@ function App() {
 
   async function handleDelete(id) {
     try {
-      const res = await fetch(`http://localhost:4000/api/todos/${id}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) {
-        console.error("Failed to delete todo:", res.status);
-        return;
-      }
-
+      await deleteTodoApi(id);
       setTodos((prev) => prev.filter((todo) => todo.id !== id));
     } catch (error) {
       console.error("Error delete todo:", error);
