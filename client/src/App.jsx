@@ -17,21 +17,21 @@ function App() {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchTodos() {
-      setLoading(true);
+  async function loadTodos() {
+    setLoading(true);
 
-      try {
-        const data = await fetchTodosApi();
-        setTodos(data);
-      } catch (error) {
-        console.error("Error fetching todos:", error);
-      } finally {
-        setLoading(false);
-      }
+    try {
+      const data = await fetchTodosApi();
+      setTodos(data);
+    } catch (error) {
+      console.error("Error fetching todos:", error);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    fetchTodos();
+  useEffect(() => {
+    loadTodos();
   }, []);
 
   const [filter, setFilter] = useState(() => {
@@ -83,7 +83,7 @@ function App() {
   async function clearCompleted() {
     try {
       await clearCompletedApi();
-      setTodos((prev) => prev.filter((todo) => !todo.completed));
+      loadTodos();
     } catch (error) {
       console.error("Error clear completed todo:", error);
     }
