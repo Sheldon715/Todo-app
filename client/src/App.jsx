@@ -7,14 +7,25 @@ import DragHint from "./components/DragHint";
 import FilterTabs from "./components/FilterTab";
 
 function App() {
-  const [todos, setTodos] = useState(() => {
-    const saved = localStorage.getItem("todo-app-todos");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    localStorage.setItem("todo-app-todos", JSON.stringify(todos));
-  }, [todos]);
+    async function fetchTodos() {
+      try {
+        const res = await fetch("http://localhost:4000/api/todos");
+        if (!res.ok) {
+          console.error("Failed to fetch", res.status);
+          return;
+        }
+        const data = await res.json();
+        setTodos(data);
+      } catch (error) {
+        console.error("Error fetching todos:", error);
+      }
+    }
+
+    fetchTodos();
+  }, []);
 
   const [filter, setFilter] = useState(() => {
     const saved = localStorage.getItem("todo-app-filter");
@@ -38,28 +49,75 @@ function App() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  function addTodo(inputText) {
-    const newTodo = {
-      id: crypto.randomUUID(),
-      text: inputText,
-      completed: false,
-    };
+  async function addTodo(inputText) {
+    const trimmed = inputText.trim();
+    if (!trimmed) return;
 
-    setTodos((prevTodo) => {
-      return [...prevTodo, newTodo];
-    });
+    try {
+      const res = await fetch("http://localhost:4000/api/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: trimmed }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to create todo:", res.status);
+        return;
+      }
+
+      const createTodo = await res.json();
+
+      setTodos((prev) => [...prev, createTodo]);
+    } catch (error) {
+      console.error("Error createing todo:", error);
+    }
   }
 
-  function toggleTodo(id) {
-    setTodos((prev) =>
-      prev.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  async function toggleTodo(id) {
+    const current = todos.find((todo) => todo.id === id);
+    if (!current) return;
+
+    const nextCompleted = !current.completed;
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/todos/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ completed: nextCompleted }),
+      });
+
+      if (!res.ok) {
+        console.error("Failed to toggle todo:", res.status);
+        return;
+      }
+
+      const updated = await res.json();
+
+      setTodos((prev) => prev.map((todo) => (todo.id === id ? updated : todo)));
+    } catch (error) {
+      console.error("Error toggle todo:", error);
+    }
   }
 
-  function clearCompleted() {
-    setTodos((prev) => prev.filter((todo) => !todo.completed));
+  async function clearCompleted() {
+    try {
+      const res = await fetch("http://localhost:4000/api/todos", {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        console.error("Failed to clear completed todo:", res.status);
+        return;
+      }
+
+      setTodos((prev) => prev.filter((todo) => !todo.completed));
+    } catch (error) {
+      console.error("Error clear completed todo:", error);
+    }
   }
 
   const filteredTodo = todos.filter((todo) => {
@@ -86,9 +144,24 @@ function App() {
     });
   }
 
-  function handleDelete(id) {
-    setTodos((prev) => prev.filter((todo) => todo.id !== id));
+  async function handleDelete(id) {
+    try {
+      const res = await fetch(`http://localhost:4000/api/todos/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) {
+        console.error("Failed to delete todo:", res.status);
+        return;
+      }
+
+      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    } catch (error) {
+      console.error("Error delete todo:", error);
+    }
+  
   }
+
 
   return (
     <div className={`app ${theme}`}>

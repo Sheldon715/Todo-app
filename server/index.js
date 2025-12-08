@@ -57,13 +57,21 @@ app.delete("/api/todos/:id", (req, res) => {
   const { id } = req.params;
 
   const beforeLength = todos.length;
-  todos = todos.filter((item) => item.id === id);
+  todos = todos.filter((item) => item.id !== id);
 
   if (beforeLength === todos.length) {
     return res.status(404).json({ error: "Todo not found" });
   }
 
   return res.status(204).send();
+});
+
+app.delete("/api/todos", (req, res) => {
+  const beforeLength = todos.length;
+  todos = todos.filter((item) => !item.completed);
+  const removed = beforeLength - todos.length;
+
+  return res.json({ removed });
 });
 
 app.get("/api/health", (req, res) => {
