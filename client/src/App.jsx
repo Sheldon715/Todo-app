@@ -8,9 +8,12 @@ import FilterTabs from "./components/FilterTab";
 
 function App() {
   const [todos, setTodos] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchTodos() {
+      setLoading(true);
+
       try {
         const res = await fetch("http://localhost:4000/api/todos");
         if (!res.ok) {
@@ -21,6 +24,8 @@ function App() {
         setTodos(data);
       } catch (error) {
         console.error("Error fetching todos:", error);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -159,9 +164,7 @@ function App() {
     } catch (error) {
       console.error("Error delete todo:", error);
     }
-  
   }
-
 
   return (
     <div className={`app ${theme}`}>
@@ -170,12 +173,16 @@ function App() {
       <div className="todo-list">
         <TodoHeader onAdd={addTodo} theme={theme} onToggleTheme={toggleTheme} />
         <div className="list-item">
-          <TodoList
-            todo={filteredTodo}
-            onToggle={toggleTodo}
-            onRecorder={handleRecorder}
-            onDelete={handleDelete}
-          />
+          {loading ? (
+            <div className="todo-card loading-card">Loading todos...</div>
+          ) : (
+            <TodoList
+              todo={filteredTodo}
+              onToggle={toggleTodo}
+              onRecorder={handleRecorder}
+              onDelete={handleDelete}
+            />
+          )}
           <TodoFooter
             itemLeft={itemLeft}
             filter={filter}

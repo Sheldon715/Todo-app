@@ -394,6 +394,24 @@ li:hover .delete-btn {
   transform: scale(0.95);
 }
 
+.loading-card {
+  margin-top: 16px;
+  padding: 16px 20px;
+  border-radius: 5px;
+  box-shadow: var(--card-shadow, 0 35px 50px -15px rgba(0, 0, 0, 0.2));
+  font-size: 14px;
+
+  background-color: #fafafa;
+  color: #777a92;
+  border: 1px solid #e4e5f1;
+}
+
+.app.dark .loading-card {
+  background-color: #25273c;
+  color: #777a92;
+  border-color: #393a4c;
+}
+
 @media (max-width: 1024px) {
   .todo-list {
     padding-top: 40px;
