@@ -2,10 +2,12 @@
 import express from "express";
 import cors from "cors";
 import pkg from "pg";
+import dotenv from "dotenv";
 
 const app = express();
 const { Pool } = pkg;
-const port = 4000;
+dotenv.config();
+const port = process.env.PORT
 
 // ====================== Middleware ======================
 app.use(cors());
@@ -13,11 +15,11 @@ app.use(express.json());
 
 // ====================== DB Connection ======================
 const pool = new Pool({
-  host: "localhost",
-  port: 5432,
-  user: "postgres",
-  password: "bestloveisxiaoyu0613",
-  database: "todo_app",
+  host: process.env.PG_HOST,
+  port: Number(process.env.PG_PORT),
+  user: process.env.PG_USER,
+  password: process.env.PG_PASSWORD,
+  database: process.env.PG_DATABASE,
 });
 
 // ====================== GET: Fetch All Todos ======================
