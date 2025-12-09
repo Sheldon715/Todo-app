@@ -1,3 +1,4 @@
+// ====================== Imports ======================
 import React, { useEffect, useState } from "react";
 import HeaderBackground from "./components/HeaderBackground";
 import TodoHeader from "./components/TodoHeader";
@@ -11,12 +12,16 @@ import {
   updateTodoApi,
   deleteTodoApi,
   clearCompletedApi,
+  reorderTodosApi,
 } from "./api/todo";
 
+// ====================== App Component ======================
 function App() {
+  // ====================== State ======================
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // ====================== Load Todos ======================
   async function loadTodos() {
     setLoading(true);
 
@@ -30,10 +35,12 @@ function App() {
     }
   }
 
+  // Initial fetch
   useEffect(() => {
     loadTodos();
   }, []);
 
+  // ====================== Filter State ======================
   const [filter, setFilter] = useState(() => {
     const saved = localStorage.getItem("todo-app-filter");
     return saved || "all";
@@ -43,6 +50,7 @@ function App() {
     localStorage.setItem("todo-app-filter", filter);
   }, [filter]);
 
+  // ====================== Theme State ======================
   const [theme, setTheme] = useState(() => {
     const saved = localStorage.getItem("todo-app-theme");
     return saved || "light";
@@ -52,10 +60,14 @@ function App() {
     localStorage.setItem("todo-app-theme", theme);
   }, [theme]);
 
+  // Toggle theme
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  // ====================== CRUD Handlers ======================
+
+  // Add new todo
   async function addTodo(inputText) {
     try {
       const createTodo = await createTodoApi(inputText);
@@ -65,6 +77,7 @@ function App() {
     }
   }
 
+  // Toggle completed
   async function toggleTodo(id) {
     const current = todos.find((todo) => todo.id === id);
     if (!current) return;
@@ -80,6 +93,7 @@ function App() {
     }
   }
 
+  // Clear completed todos
   async function clearCompleted() {
     try {
       await clearCompletedApi();
@@ -89,30 +103,7 @@ function App() {
     }
   }
 
-  const filteredTodo = todos.filter((todo) => {
-    if (filter === "active") return !todo.completed;
-    if (filter === "completed") return todo.completed;
-    return true;
-  });
-
-  const itemLeft = todos.filter((todo) => !todo.completed).length;
-
-  function handleRecorder(sourceId, targetId) {
-    if (sourceId === targetId) return;
-
-    setTodos((prevTodo) => {
-      const sourceIndex = prevTodo.findIndex((t) => t.id === sourceId);
-      const targetIndex = prevTodo.findIndex((t) => t.id === targetId);
-
-      if (sourceIndex === -1 || targetIndex === -1) return prevTodo;
-
-      const updated = [...prevTodo];
-      const [moved] = updated.splice(sourceIndex, 1);
-      updated.splice(targetIndex, 0, moved);
-      return updated;
-    });
-  }
-
+  // Delete todo
   async function handleDelete(id) {
     try {
       await deleteTodoApi(id);
@@ -122,6 +113,46 @@ function App() {
     }
   }
 
+  // ====================== Reorder Handler ======================
+  async function saveOrderToServer(nextTodos) {
+    const orderedIds = nextTodos.map((todo) => todo.id);
+
+    try {
+      await reorderTodosApi(orderedIds);
+    } catch (error) {
+      console.error("Error saving todos order:", error);
+    }
+  }
+
+  function handleReorder(sourceId, targetId) {
+    if (sourceId === targetId) return;
+
+    setTodos((prevTodo) => {
+      const sourceIndex = prevTodo.findIndex((t) => String(t.id) === String(sourceId));
+      const targetIndex = prevTodo.findIndex((t) => String(t.id) === String(targetId));
+
+      if (sourceIndex === -1 || targetIndex === -1) return prevTodo;
+
+      const updated = [...prevTodo];
+      const [moved] = updated.splice(sourceIndex, 1);
+      updated.splice(targetIndex, 0, moved);
+
+      saveOrderToServer(updated);
+
+      return updated;
+    });
+  }
+
+  // ====================== Derived Values ======================
+  const filteredTodo = todos.filter((todo) => {
+    if (filter === "active") return !todo.completed;
+    if (filter === "completed") return todo.completed;
+    return true;
+  });
+
+  const itemLeft = todos.filter((todo) => !todo.completed).length;
+
+  // ====================== Render ======================
   return (
     <div className={`app ${theme}`}>
       <HeaderBackground theme={theme} />
@@ -135,7 +166,7 @@ function App() {
             <TodoList
               todo={filteredTodo}
               onToggle={toggleTodo}
-              onRecorder={handleRecorder}
+              onReorder={handleReorder}
               onDelete={handleDelete}
             />
           )}

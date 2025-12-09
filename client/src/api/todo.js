@@ -1,5 +1,7 @@
+// ====================== API Base ======================
 const API_BASE_URL = "http://localhost:4000/api";
 
+// ====================== Fetch All Todos ======================
 export async function fetchTodosApi() {
   const res = await fetch(`${API_BASE_URL}/todos`);
 
@@ -13,6 +15,7 @@ export async function fetchTodosApi() {
   return data;
 }
 
+// ====================== Create Todo ======================
 export async function createTodoApi(text) {
   const trimmed = text.trim();
   if (!trimmed) {
@@ -35,6 +38,7 @@ export async function createTodoApi(text) {
   return createdTodo;
 }
 
+// ====================== Update Todo ======================
 export async function updateTodoApi(id, partial) {
   const res = await fetch(`${API_BASE_URL}/todos/${id}`, {
     method: "PATCH",
@@ -52,6 +56,7 @@ export async function updateTodoApi(id, partial) {
   return updated;
 }
 
+// ====================== Delete Todo ======================
 export async function deleteTodoApi(id) {
   const res = await fetch(`${API_BASE_URL}/todos/${id}`, {
     method: "DELETE",
@@ -66,6 +71,7 @@ export async function deleteTodoApi(id) {
   return;
 }
 
+// ====================== Clear Completed ======================
 export async function clearCompletedApi() {
   const res = await fetch(`${API_BASE_URL}/todos`, {
     method: "DELETE",
@@ -73,6 +79,24 @@ export async function clearCompletedApi() {
 
   if (!res.ok) {
     const message = `Failed to clear completed todos: ${res.status}`;
+    console.error(message);
+    throw new Error(message);
+  }
+
+  const data = await res.json();
+  return data;
+}
+
+// ====================== Reorder Todos ======================
+export async function reorderTodosApi(orderIds) {
+  const res = await fetch(`${API_BASE_URL}/todos/reorder`, {
+    method: "PUT",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ orderIds }),
+  });
+
+  if (!res.ok) {
+    const message = `Failed to reorder todo: ${res.status}`;
     console.error(message);
     throw new Error(message);
   }
