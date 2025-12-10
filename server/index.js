@@ -3,11 +3,13 @@ import express from "express";
 import cors from "cors";
 import pkg from "pg";
 import dotenv from "dotenv";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const app = express();
 const { Pool } = pkg;
 dotenv.config();
-const port = process.env.PORT
+const port = process.env.PORT;
 
 // ====================== Middleware ======================
 app.use(cors());
@@ -20,6 +22,97 @@ const pool = new Pool({
   user: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DATABASE,
+});
+
+// ====================== JWT Generate ======================
+function generateToken(userId) {
+  return jwt.sign({ userId }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+}
+
+// ====================== Auth: Register ======================
+app.post("/api/auth/register", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  try {
+    const existing = await pool.query("SELECT id FROM users WHERE email = $1", [
+      email,
+    ]);
+
+    if (existing.rowCount > 0) {
+      return res.status(409).json({ error: "Email is already registered" });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const result = await pool.query(
+      "INSERT INTO users (email, password_hash) VALUES ($1, $2)" +
+        "RETURNING id, email, created_at",
+      [email, passwordHash]
+    );
+
+    const user = result.rows[0];
+    const token = generateToken(user.id);
+
+    return res.status(201).json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        createdAt: user.created_at,
+      },
+    });
+  } catch {
+    console.error("Error registering user:", error);
+    return res.status(500).json({ error: "Failed to register user" });
+  }
+});
+
+// ====================== Auth: Login ======================
+app.post("/api/auth/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password are required" });
+  }
+
+  try {
+    const result = await pool.query(
+      "SELECT id, email, password_hash, created_at FROM users WHERE email = $1",
+      [email]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const user = result.rows[0];
+
+    const match = await bcrypt.compare(password, user.password_hash);
+
+    if (!match) {
+      return res.status(401).json({ error: "Invalid email or password" });
+    }
+
+    const token = generateToken(user.id);
+
+    return res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        createdAt: user.created_at,
+      },
+    });
+  } catch (error) {
+    console.error("Error logging in user:", error);
+    return res.status(500).json({ error: "Failed to login" });
+  }
 });
 
 // ====================== GET: Fetch All Todos ======================
@@ -116,7 +209,6 @@ app.delete("/api/todos/:id", async (req, res) => {
   }
 });
 
-
 // ====================== DELETE: Clear Completed ======================
 app.delete("/api/todos", async (req, res) => {
   try {
@@ -129,7 +221,6 @@ app.delete("/api/todos", async (req, res) => {
     return res.status(500).json({ error: "Failed to clear completed todos" });
   }
 });
-
 
 // ====================== PUT: Reorder Todos ======================
 app.put("/api/todos/reorder", async (req, res) => {
