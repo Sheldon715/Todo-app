@@ -31,6 +31,27 @@ function generateToken(userId) {
   });
 }
 
+// ====================== Auth Middleware ======================
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization || "";
+
+  if (!authHeader.startsWith("Bearer ")) {
+    return res.status(401).json({ error: "Authorization header missing" });
+  }
+
+  const token = authHeader.slice("Bearer ".length).trim();
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.userId = payload.userId;
+
+    return next();
+  } catch (error) {
+    console.error("Invalid token:", error.message);
+    return res.status(401).json({ error: "Invalid or expired token" });
+  }
+}
+
 // ====================== Auth: Register ======================
 app.post("/api/auth/register", async (req, res) => {
   const { email, password } = req.body;
@@ -67,7 +88,7 @@ app.post("/api/auth/register", async (req, res) => {
         createdAt: user.created_at,
       },
     });
-  } catch {
+  } catch (error) {
     console.error("Error registering user:", error);
     return res.status(500).json({ error: "Failed to register user" });
   }
@@ -116,10 +137,12 @@ app.post("/api/auth/login", async (req, res) => {
 });
 
 // ====================== GET: Fetch All Todos ======================
-app.get("/api/todos", async (req, res) => {
+app.get("/api/todos", authMiddleware, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT id, text, completed FROM todos ORDER BY position ASC, id ASC"
+      "SELECT id, text, completed FROM todos " +
+        "WHERE user_id = $1 ORDER BY position ASC, id ASC",
+      [req.userId]
     );
 
     return res.json(result.rows);
@@ -130,7 +153,7 @@ app.get("/api/todos", async (req, res) => {
 });
 
 // ====================== POST: Create Todo ======================
-app.post("/api/todos", async (req, res) => {
+app.post("/api/todos", authMiddleware, async (req, res) => {
   const { text } = req.body;
 
   if (!text || typeof text !== "string" || text.trim() === "") {
@@ -139,9 +162,10 @@ app.post("/api/todos", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "INSERT INTO todos (text, completed, position) VALUES ($1, $2, " +
-        "(SELECT COALESCE(MAX(position), 0) + 1 FROM todos)) RETURNING id, text, completed",
-      [text.trim(), false]
+      "INSERT INTO todos (text, completed, position, user_id) VALUES ($1, $2, " +
+        "(SELECT COALESCE(MAX(position), 0) + 1 FROM todos WHERE user_id = $3), $3) " +
+        "RETURNING id, text, completed, position",
+      [text.trim(), false, req.userId]
     );
 
     const newTodo = result.rows[0];
@@ -153,7 +177,7 @@ app.post("/api/todos", async (req, res) => {
 });
 
 // ====================== PATCH: Update Todo ======================
-app.patch("/api/todos/:id", async (req, res) => {
+app.patch("/api/todos/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
   const { completed } = req.body;
 
@@ -168,8 +192,9 @@ app.patch("/api/todos/:id", async (req, res) => {
 
   try {
     const result = await pool.query(
-      "UPDATE todos SET completed = $1 WHERE id = $2 RETURNING id, text, completed",
-      [completed, numericId]
+      "UPDATE todos SET completed = $1 WHERE id = $2 AND user_id = $3 " +
+        "RETURNING id, text, completed, position",
+      [completed, numericId, req.userId]
     );
 
     if (result.rowCount === 0) {
@@ -185,7 +210,7 @@ app.patch("/api/todos/:id", async (req, res) => {
 });
 
 // ====================== DELETE: Single Todo ======================
-app.delete("/api/todos/:id", async (req, res) => {
+app.delete("/api/todos/:id", authMiddleware, async (req, res) => {
   const { id } = req.params;
 
   const numericId = Number(id);
@@ -194,9 +219,10 @@ app.delete("/api/todos/:id", async (req, res) => {
   }
 
   try {
-    const result = await pool.query("DELETE FROM todos WHERE id = $1", [
-      numericId,
-    ]);
+    const result = await pool.query(
+      "DELETE FROM todos WHERE id = $1 AND user_id = $2",
+      [numericId, req.userId]
+    );
 
     if (result.rowCount === 0) {
       return res.status(404).json({ error: "Todo not found" });
@@ -210,9 +236,12 @@ app.delete("/api/todos/:id", async (req, res) => {
 });
 
 // ====================== DELETE: Clear Completed ======================
-app.delete("/api/todos", async (req, res) => {
+app.delete("/api/todos", authMiddleware, async (req, res) => {
   try {
-    const result = await pool.query("DELETE FROM todos WHERE completed = TRUE");
+    const result = await pool.query(
+      "DELETE FROM todos WHERE completed = TRUE AND user_id = $1",
+      [req.userId]
+    );
     const removed = result.rowCount;
 
     return res.json({ removed });
@@ -223,7 +252,7 @@ app.delete("/api/todos", async (req, res) => {
 });
 
 // ====================== PUT: Reorder Todos ======================
-app.put("/api/todos/reorder", async (req, res) => {
+app.put("/api/todos/reorder", authMiddleware, async (req, res) => {
   const { orderIds } = req.body;
 
   if (!Array.isArray(orderIds) || orderIds.length === 0) {
@@ -242,10 +271,10 @@ app.put("/api/todos/reorder", async (req, res) => {
           .json({ error: "orderIds must contain integers" });
       }
 
-      await pool.query("UPDATE todos SET position = $1 WHERE id = $2", [
-        index,
-        id,
-      ]);
+      await pool.query(
+        "UPDATE todos SET position = $1 WHERE id = $2 AND user_id = $3",
+        [index, id, req.userId]
+      );
     }
 
     return res.json({ success: true });
