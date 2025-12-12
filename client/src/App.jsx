@@ -6,6 +6,7 @@ import TodoList from "./components/TodoList";
 import TodoFooter from "./components/TodoFooter";
 import DragHint from "./components/DragHint";
 import FilterTabs from "./components/FilterTab";
+import AuthPage from "./components/AuthPage";
 import {
   fetchTodosApi,
   createTodoApi,
