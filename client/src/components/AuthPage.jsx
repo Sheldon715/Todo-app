@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { loginApi, registerApi } from "../api/auth";
 
-function AuthPage() {
+function AuthPage({ onAuthSuccess }) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,6 +40,10 @@ function AuthPage() {
         localStorage.setItem("todo-app-token", result.token);
 
         console.log("[Auth success]", result);
+
+        if(typeof onAuthSuccess === "function") {
+          onAuthSuccess(result);
+        }
         alert(mode === "login" ? "Login sucessful!" : "Register sucessful!");
       } else {
         console.error("Auth success response missing token:", result);
@@ -99,14 +103,13 @@ function AuthPage() {
           </label>
 
           <button type="submit" className="auth-submit" disabled={submitting}>
-            {submitting ? 
-                mode === "login" 
-                ? "Logging in..." 
+            {submitting
+              ? mode === "login"
+                ? "Logging in..."
                 : "Registering..."
-            : mode === "login"
-            ? "Login"
-            : "Register"
-            }
+              : mode === "login"
+              ? "Login"
+              : "Register"}
           </button>
         </form>
       </div>

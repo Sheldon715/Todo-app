@@ -21,9 +21,29 @@ function App() {
   // ====================== State ======================
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [token, setToken] = useState(
+    () => localStorage.getItem("todo-app-token") || ""
+  );
+  const [user, setUser] = useState(null);
+  const isAuthenticated = Boolean(token);
+
+  // ====================== Auth Handlers ======================
+  function handleAuthSuccess(authResult) {
+    const nextToken = authResult?.token;
+    const nextUser = authResult?.user || null;
+
+    if (!nextToken) return;
+
+    localStorage.setItem("todo-app-token", nextToken);
+
+    setToken(nextToken);
+    setUser(nextUser);
+  }
 
   // ====================== Load Todos ======================
   async function loadTodos() {
+    if (!isAuthenticated) return;
+
     setLoading(true);
 
     try {
@@ -38,8 +58,9 @@ function App() {
 
   // Initial fetch
   useEffect(() => {
+    if (!isAuthenticated) return;
     loadTodos();
-  }, []);
+  }, [isAuthenticated]);
 
   // ====================== Filter State ======================
   const [filter, setFilter] = useState(() => {
@@ -129,8 +150,12 @@ function App() {
     if (sourceId === targetId) return;
 
     setTodos((prevTodo) => {
-      const sourceIndex = prevTodo.findIndex((t) => String(t.id) === String(sourceId));
-      const targetIndex = prevTodo.findIndex((t) => String(t.id) === String(targetId));
+      const sourceIndex = prevTodo.findIndex(
+        (t) => String(t.id) === String(sourceId)
+      );
+      const targetIndex = prevTodo.findIndex(
+        (t) => String(t.id) === String(targetId)
+      );
 
       if (sourceIndex === -1 || targetIndex === -1) return prevTodo;
 
@@ -154,7 +179,9 @@ function App() {
   const itemLeft = todos.filter((todo) => !todo.completed).length;
 
   // ====================== Render ======================
-  return (
+  return !isAuthenticated ? (
+    <AuthPage onAuthSuccess={handleAuthSuccess} />
+  ) : (
     <div className={`app ${theme}`}>
       <HeaderBackground theme={theme} />
 
