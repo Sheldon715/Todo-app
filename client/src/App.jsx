@@ -26,6 +26,7 @@ function App() {
   );
   const [user, setUser] = useState(null);
   const isAuthenticated = Boolean(token);
+  const [apiError, setApiError] = useState("");
 
   // ====================== Auth Handlers ======================
   function handleAuthSuccess(authResult) {
@@ -40,17 +41,32 @@ function App() {
     setUser(nextUser);
   }
 
+  function handleLogout() {
+    localStorage.removeItem("todo-app-token");
+    setToken("");
+    setUser(null);
+    setTodos([]);
+    setLoading(false);
+  }
+
   // ====================== Load Todos ======================
   async function loadTodos() {
     if (!isAuthenticated) return;
 
     setLoading(true);
+    setApiError("");
 
     try {
       const data = await fetchTodosApi();
       setTodos(data);
     } catch (error) {
       console.error("Error fetching todos:", error);
+
+      if (error.status === 401) {
+        handleLogout();
+      } else {
+        setApiError(error.message || "Failed to load todos.");
+      }
     } finally {
       setLoading(false);
     }
@@ -180,13 +196,32 @@ function App() {
 
   // ====================== Render ======================
   return !isAuthenticated ? (
-    <AuthPage onAuthSuccess={handleAuthSuccess} />
+    <div className={`app ${theme}`}>
+      <HeaderBackground theme={theme} />
+
+      <div className="todo-list">
+        <TodoHeader
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          showInput={false}
+        />
+
+        <AuthPage onAuthSuccess={handleAuthSuccess} />
+      </div>
+    </div>
   ) : (
     <div className={`app ${theme}`}>
       <HeaderBackground theme={theme} />
 
       <div className="todo-list">
-        <TodoHeader onAdd={addTodo} theme={theme} onToggleTheme={toggleTheme} />
+        <TodoHeader
+          onAdd={addTodo}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          onLogout={handleLogout}
+        
+        />
+        {apiError ? <div className="api-error">{apiError}</div> : null}
         <div className="list-item">
           {loading ? (
             <div className="todo-card loading-card">Loading todos...</div>
@@ -196,6 +231,7 @@ function App() {
               onToggle={toggleTodo}
               onReorder={handleReorder}
               onDelete={handleDelete}
+              showInput={false}
             />
           )}
           <TodoFooter

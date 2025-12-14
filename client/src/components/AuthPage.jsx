@@ -6,12 +6,14 @@ function AuthPage({ onAuthSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   function handleSwitchMode(nextMode) {
     if (nextMode === mode) return;
 
     setMode(nextMode);
     setPassword("");
+    setErrorMessage("");
   }
 
   async function handleSubmit(event) {
@@ -21,10 +23,11 @@ function AuthPage({ onAuthSuccess }) {
     const trimmedPassword = password.trim();
 
     if (!trimmedEmail || !trimmedPassword) {
-      alert("Please enter both email and password.");
+      setErrorMessage("Please enter both email and password.");
       return;
     }
 
+    setErrorMessage("");
     setSubmitting(true);
 
     try {
@@ -41,17 +44,16 @@ function AuthPage({ onAuthSuccess }) {
 
         console.log("[Auth success]", result);
 
-        if(typeof onAuthSuccess === "function") {
+        if (typeof onAuthSuccess === "function") {
           onAuthSuccess(result);
         }
-        alert(mode === "login" ? "Login sucessful!" : "Register sucessful!");
       } else {
         console.error("Auth success response missing token:", result);
         alert("Unexpected response from server.");
       }
     } catch (error) {
       console.error("Auth error:", error);
-      alert(error.message || "Authentication failed.");
+      setErrorMessage(error.message || "Authentication failed.");
     } finally {
       setSubmitting(false);
     }
@@ -60,47 +62,37 @@ function AuthPage({ onAuthSuccess }) {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <h1 className="auth-title">Todo App</h1>
-
-        <div className="auth-tabs">
-          <button
-            type="button"
-            className="auth-tab"
-            onClick={() => handleSwitchMode("login")}
-          >
-            Login
-          </button>
-          <button
-            type="button"
-            className="auth-tab"
-            onClick={() => handleSwitchMode("register")}
-          >
-            Register
-          </button>
-        </div>
-
         <form className="auth-form" onSubmit={handleSubmit}>
-          <label className="label">
-            <span>Email</span>
-            <input
-              type="email"
-              className="auth-input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-            />
-          </label>
+          {errorMessage ? (
+            <div className="auth-error">{errorMessage}</div>
+          ) : null}
+          <div className="auth-input-card">
+            <div className="auth-row">
+              <label className="auth-label">
+                <span>Email</span>
+                <input
+                  type="email"
+                  className="auth-input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                />
+              </label>
+            </div>
 
-          <label className="auth-label">
-            <span>Password</span>
-            <input
-              type="password"
-              className="auth-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
-          </label>
+            <div className="auth-row">
+              <label className="auth-label">
+                <span>Password</span>
+                <input
+                  type="password"
+                  className="auth-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                />
+              </label>
+            </div>
+          </div>
 
           <button type="submit" className="auth-submit" disabled={submitting}>
             {submitting
@@ -111,6 +103,22 @@ function AuthPage({ onAuthSuccess }) {
               ? "Login"
               : "Register"}
           </button>
+
+          <div className="auth-switch">
+            <span className="auth-switch-text">
+              {mode === "login" ? "No account?" : "Already have an account?"}
+            </span>
+
+            <button
+              type="button"
+              className="auth-switch-link"
+              onClick={() =>
+                handleSwitchMode(mode === "login" ? "register" : "login")
+              }
+            >
+              {mode === "login" ? "Register" : "Login"}
+            </button>
+          </div>
         </form>
       </div>
     </div>

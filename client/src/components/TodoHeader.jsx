@@ -3,7 +3,13 @@ import PropTypes from "prop-types";
 import iconSun from "../assets/images/icon-sun.svg";
 import iconMoon from "../assets/images/icon-moon.svg";
 
-function TodoHeader({ onAdd, theme, onToggleTheme }) {
+function TodoHeader({
+  onAdd,
+  theme,
+  onToggleTheme,
+  onLogout,
+  showInput = true,
+}) {
   const [inputValue, setInputValue] = useState("");
 
   function handleChange(event) {
@@ -14,7 +20,9 @@ function TodoHeader({ onAdd, theme, onToggleTheme }) {
   function handleSubmit(event) {
     event.preventDefault();
     if (inputValue) {
-      onAdd(inputValue);
+      if (typeof onAdd === "function") {
+        onAdd(inputValue);
+      }
       setInputValue("");
     }
   }
@@ -32,25 +40,34 @@ function TodoHeader({ onAdd, theme, onToggleTheme }) {
             }
           />
         </button>
+        {typeof onLogout === "function" ? (
+          <button type="button" className="logout-btn" onClick={onLogout}>
+            Logout
+          </button>
+        ) : null}
       </div>
-      <div className="search-bar">
-        <form onSubmit={handleSubmit}>
-          <input
-            className="search-input"
-            onChange={handleChange}
-            type="text"
-            value={inputValue}
-            placeholder="Create a new todo..."
-          />
-        </form>
-      </div>
+      {showInput ? (
+        <div className="search-bar">
+          <form onSubmit={handleSubmit}>
+            <input
+              className="search-input"
+              onChange={handleChange}
+              type="text"
+              value={inputValue}
+              placeholder="Create a new todo..."
+            />
+          </form>
+        </div>
+      ) : null}
     </>
   );
 }
 TodoHeader.propTypes = {
-  onAdd: PropTypes.func.isRequired,
+  onAdd: PropTypes.func,
   theme: PropTypes.string.isRequired,
   onToggleTheme: PropTypes.func.isRequired,
+  onLogout: PropTypes.func,
+  showInput: PropTypes.bool,
 };
 
 export default TodoHeader;
