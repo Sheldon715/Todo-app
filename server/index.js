@@ -1,28 +1,19 @@
 // ====================== Imports ======================
 import express from "express";
 import cors from "cors";
-import pkg from "pg";
-import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import passport from "passport";
+import "./auth/google.js";
+import pool from "./db.js";
 
 const app = express();
-const { Pool } = pkg;
-dotenv.config();
 const port = process.env.PORT;
 
 // ====================== Middleware ======================
 app.use(cors());
 app.use(express.json());
-
-// ====================== DB Connection ======================
-const pool = new Pool({
-  host: process.env.PG_HOST,
-  port: Number(process.env.PG_PORT),
-  user: process.env.PG_USER,
-  password: process.env.PG_PASSWORD,
-  database: process.env.PG_DATABASE,
-});
+app.use(passport.initialize());
 
 // ====================== JWT Generate ======================
 function generateToken(userId) {
@@ -135,6 +126,30 @@ app.post("/api/auth/login", async (req, res) => {
     return res.status(500).json({ error: "Failed to login" });
   }
 });
+
+// ====================== Google OAuth ======================
+app.get(
+  "/api/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
+
+app.get(
+  "/api/auth/google/callback",
+  passport.authenticate("google", {
+    session: false,
+    failureRedirect: "/login",
+  }),
+  (req, res) => {
+    const { token } = req.user;
+
+    const redirectUrl = `http://localhost:5173/auth/callback?token=${token}`;
+    res.redirect(redirectUrl);
+  }
+);
+
+
 
 // ====================== GET: Fetch All Todos ======================
 app.get("/api/todos", authMiddleware, async (req, res) => {

@@ -159,6 +159,19 @@ function AuthPage({ onAuthSuccess }) {
               {mode === "login" ? "Register" : "Login"}
             </button>
           </div>
+
+          <div className="auth-divider">or</div>
+
+          <button
+            type="button"
+            className="auth-google-btn"
+            disabled={submitting}
+            onClick={() => {
+              window.location.href = "http://localhost:4000/api/auth/google";
+            }}
+          >
+            Continue with Google
+          </button>
         </form>
       </div>
     </div>

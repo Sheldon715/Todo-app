@@ -83,6 +83,20 @@ function App() {
     }
   }
 
+  // ====================== Google OAuth Callback ======================
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get("token");
+
+    if (!urlToken) return;
+
+    localStorage.setItem("todo-app-token", urlToken);
+    setToken(urlToken);
+
+    // Clean URL (remove ?token=...)
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }, []);
+
   // Initial fetch
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -224,15 +238,19 @@ function App() {
     <div className={`app ${theme}`}>
       <HeaderBackground theme={theme} />
       <div className="top-right-user">
-        {userEmail ? <div className="top-right-email">{userEmail}</div> : null}
+        <div className="top-right-user-inner">
+          {userEmail ? (
+            <div className="top-right-email">{userEmail}</div>
+          ) : null}
 
-        <button
-          type="button"
-          className="top-right-logout"
-          onClick={handleLogout}
-        >
-          Logout
-        </button>
+          <button
+            type="button"
+            className="top-right-logout"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
       </div>
 
       <div className="todo-list">
