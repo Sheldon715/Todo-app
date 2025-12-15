@@ -6,14 +6,16 @@ function AuthPage({ onAuthSuccess }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState("");
 
   function handleSwitchMode(nextMode) {
     if (nextMode === mode) return;
 
     setMode(nextMode);
     setPassword("");
-    setErrorMessage("");
+    setMessage("");
+    setMessageType("");
   }
 
   async function handleSubmit(event) {
@@ -23,37 +25,68 @@ function AuthPage({ onAuthSuccess }) {
     const trimmedPassword = password.trim();
 
     if (!trimmedEmail || !trimmedPassword) {
-      setErrorMessage("Please enter both email and password.");
+      setMessageType("error");
+      setMessage("Please enter both email and password.");
       return;
     }
 
-    setErrorMessage("");
+    setMessage("");
+    setMessageType("");
     setSubmitting(true);
 
     try {
-      let result;
-
       if (mode === "login") {
-        result = await loginApi(trimmedEmail, trimmedPassword);
-      } else {
-        result = await registerApi(trimmedEmail, trimmedPassword);
-      }
+        const result = await loginApi(trimmedEmail, trimmedPassword);
 
-      if (result?.token) {
-        localStorage.setItem("todo-app-token", result.token);
+        if (result?.token) {
+          localStorage.setItem("todo-app-token", result.token);
 
-        console.log("[Auth success]", result);
+          console.log("[Auth success]", result);
 
-        if (typeof onAuthSuccess === "function") {
-          onAuthSuccess(result);
+          if (typeof onAuthSuccess === "function") {
+            onAuthSuccess(result);
+          }
+        } else {
+          console.error("Auth success response missing token:", result);
+          alert("Unexpected response from server.");
         }
-      } else {
-        console.error("Auth success response missing token:", result);
-        alert("Unexpected response from server.");
+
+        return;
       }
+
+      await registerApi(trimmedEmail, trimmedPassword);
+
+      setPassword("");
+
+      setMode("login");
+
+      setMessageType("success");
+      setMessage("Registration successful. Please log in.");
     } catch (error) {
-      console.error("Auth error:", error);
-      setErrorMessage(error.message || "Authentication failed.");
+      console.error(error);
+
+      if (error.status === 401) {
+        setMessageType("error");
+        setMessage("Email or password is incorrect.");
+        return;
+      }
+
+      if (error.status === 409) {
+        setMessageType("error");
+        setMessage("This email is already registered. Please log in instead.");
+        return;
+      }
+
+      if (!error.status) {
+        setMessageType("error");
+        setMessage(
+          "Unable to connect to server. Please check your connection or try again later."
+        );
+        return;
+      }
+
+      setMessageType("error");
+      setMessage(error.message || "Something went wrong. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -63,8 +96,8 @@ function AuthPage({ onAuthSuccess }) {
     <div className="auth-page">
       <div className="auth-card">
         <form className="auth-form" onSubmit={handleSubmit}>
-          {errorMessage ? (
-            <div className="auth-error">{errorMessage}</div>
+          {message ? (
+            <div className={`auth-message ${messageType}`}>{message}</div>
           ) : null}
           <div className="auth-input-card">
             <div className="auth-row">
@@ -76,6 +109,7 @@ function AuthPage({ onAuthSuccess }) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
+                  disabled={submitting}
                 />
               </label>
             </div>
@@ -89,12 +123,17 @@ function AuthPage({ onAuthSuccess }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
+                  disabled={submitting}
                 />
               </label>
             </div>
           </div>
 
-          <button type="submit" className="auth-submit" disabled={submitting}>
+          <button
+            type="submit"
+            className={`auth-submit ${submitting ? "is-loading" : ""}`}
+            disabled={submitting}
+          >
             {submitting
               ? mode === "login"
                 ? "Logging in..."
@@ -112,6 +151,7 @@ function AuthPage({ onAuthSuccess }) {
             <button
               type="button"
               className="auth-switch-link"
+              disabled={submitting}
               onClick={() =>
                 handleSwitchMode(mode === "login" ? "register" : "login")
               }

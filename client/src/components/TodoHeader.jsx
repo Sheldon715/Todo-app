@@ -7,7 +7,6 @@ function TodoHeader({
   onAdd,
   theme,
   onToggleTheme,
-  onLogout,
   showInput = true,
 }) {
   const [inputValue, setInputValue] = useState("");
@@ -40,11 +39,6 @@ function TodoHeader({
             }
           />
         </button>
-        {typeof onLogout === "function" ? (
-          <button type="button" className="logout-btn" onClick={onLogout}>
-            Logout
-          </button>
-        ) : null}
       </div>
       {showInput ? (
         <div className="search-bar">
@@ -66,7 +60,6 @@ TodoHeader.propTypes = {
   onAdd: PropTypes.func,
   theme: PropTypes.string.isRequired,
   onToggleTheme: PropTypes.func.isRequired,
-  onLogout: PropTypes.func,
   showInput: PropTypes.bool,
 };
 

@@ -27,6 +27,9 @@ function App() {
   const [user, setUser] = useState(null);
   const isAuthenticated = Boolean(token);
   const [apiError, setApiError] = useState("");
+  const [userEmail, setUserEmail] = useState(
+    () => localStorage.getItem("todo-app-user-email") || ""
+  );
 
   // ====================== Auth Handlers ======================
   function handleAuthSuccess(authResult) {
@@ -39,12 +42,20 @@ function App() {
 
     setToken(nextToken);
     setUser(nextUser);
+
+    const nextEmail = nextUser?.email || "";
+    if (nextEmail) {
+      localStorage.setItem("todo-app-user-email", nextEmail);
+      setUserEmail(nextEmail);
+    }
   }
 
   function handleLogout() {
     localStorage.removeItem("todo-app-token");
+    localStorage.removeItem("todo-app-user-email");
     setToken("");
     setUser(null);
+    setUserEmail("");
     setTodos([]);
     setLoading(false);
   }
@@ -212,6 +223,17 @@ function App() {
   ) : (
     <div className={`app ${theme}`}>
       <HeaderBackground theme={theme} />
+      <div className="top-right-user">
+        {userEmail ? <div className="top-right-email">{userEmail}</div> : null}
+
+        <button
+          type="button"
+          className="top-right-logout"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
 
       <div className="todo-list">
         <TodoHeader
@@ -219,7 +241,7 @@ function App() {
           theme={theme}
           onToggleTheme={toggleTheme}
           onLogout={handleLogout}
-        
+          userEmail={user?.email || ""}
         />
         {apiError ? <div className="api-error">{apiError}</div> : null}
         <div className="list-item">

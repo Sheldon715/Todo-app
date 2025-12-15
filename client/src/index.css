@@ -447,7 +447,6 @@ li:hover .delete-btn {
   width: 100%;
 }
 
-
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -478,6 +477,11 @@ li:hover .delete-btn {
   color: #e3e4f1;
 }
 
+.auth-input:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .auth-submit {
   height: 48px;
   border-radius: 5px;
@@ -495,22 +499,22 @@ li:hover .delete-btn {
   cursor: not-allowed;
 }
 
+.auth-submit:disabled:hover {
+  opacity: 0.6;
+  filter: none;
+}
+
+.auth-submit:disabled:active {
+  transform: none;
+}
+
 .auth-submit:active {
   transform: scale(0.99);
+  filter: brightness(0.98);
 }
 
-.auth-error {
-  margin: 12px 0;
-  padding: 10px 12px;
-  border-radius: 6px;
-  font-size: 14px;
-  line-height: 1.3;
-  background: rgba(255, 0, 0, 0.08);
-  color: #494c6b;
-}
-
-.app.dark .auth-error {
-  color: #e3e4f1;
+.auth-submit:hover {
+  filter: brightness(1.06);
 }
 
 .auth-input-card {
@@ -559,6 +563,83 @@ li:hover .delete-btn {
 }
 
 .auth-switch-link:hover {
+  text-decoration: underline;
+}
+
+.auth-message {
+  margin: 12px 0;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+.auth-message.error {
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.18);
+  color: #e3e4f1;
+}
+
+.auth-message.success {
+  background: rgba(76, 175, 80, 0.12);
+  border: 1px solid rgba(76, 175, 80, 0.28);
+  color: #e3e4f1;
+}
+
+@keyframes authLoadingPulse {
+  0% {
+    opacity: 0.65;
+  }
+  50% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0.65;
+  }
+}
+
+.auth-submit.is-loading {
+  animation: authLoadingPulse 1.1s ease-in-out infinite;
+}
+
+.top-right-user {
+  position: absolute;
+  top: 28px;
+  right: 24px;
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  color: white;
+}
+
+.top-right-email {
+  font-size: 13px;
+  opacity: 0.9;
+  user-select: none;
+
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-right-logout {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+
+  color: white;
+  font: inherit;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
+.top-right-logout:hover {
+  opacity: 1;
   text-decoration: underline;
 }
 
@@ -746,5 +827,10 @@ li:hover .delete-btn {
   .delete-btn img {
     width: 16px;
     height: 16px;
+  }
+
+  .top-right-user {
+    top: 18px;
+    right: 18px;
   }
 }
