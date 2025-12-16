@@ -8,6 +8,7 @@ function AuthPage({ onAuthSuccess }) {
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
+  const apiOrigin = import.meta.env.VITE_API_ORIGIN || "http://localhost:4000";
 
   function handleSwitchMode(nextMode) {
     if (nextMode === mode) return;
@@ -167,7 +168,7 @@ function AuthPage({ onAuthSuccess }) {
             className="auth-google-btn"
             disabled={submitting}
             onClick={() => {
-              window.location.href = "http://localhost:4000/api/auth/google";
+              window.location.href = `${apiOrigin}/api/auth/google`;
             }}
           >
             Continue with Google
