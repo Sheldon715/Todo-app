@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev:proxy": "set GLOBAL_AGENT_HTTP_PROXY=http://127.0.0.1:22307 && nodemon index.js"
+    "dev": "nodemon index.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
