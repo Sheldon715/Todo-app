@@ -1,5 +1,7 @@
 // ====================== Config ======================
-const API_BASE_URL = "http://localhost:4000/api";
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN || "http://localhost:4000";
+const API_BASE_URL = `${API_ORIGIN}/api`;
+
 
 // ====================== Helpers ======================
 async function handleJsonResponse(res) {

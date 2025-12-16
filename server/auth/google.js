@@ -7,13 +7,21 @@ import pool from "../db.js";
 // ====================== Config ======================
 const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, JWT_SECRET } = process.env;
 
+const serverOrigin =
+  process.env.SERVER_ORIGIN ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "http://localhost:4000");
+
+const googleCallbackUrl =
+  process.env.GOOGLE_CALLBACK_URL || `${serverOrigin}/api/auth/google/callback`;
+
+
 // ====================== Strategy ======================
 passport.use(
   new GoogleStrategy(
     {
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:4000/api/auth/google/callback",
+      callbackURL: googleCallbackUrl,
     },
 
     async (accessToken, refreshToken, profile, done) => {

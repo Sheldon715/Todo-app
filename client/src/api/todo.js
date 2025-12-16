@@ -1,13 +1,14 @@
 // ====================== API Base ======================
-const API_BASE_URL = "http://localhost:4000/api";
+const API_ORIGIN = import.meta.env.VITE_API_ORIGIN || "http://localhost:4000";
+const API_BASE_URL = `${API_ORIGIN}/api`;
 
 // ====================== Auth Helpers ======================
 function getAuthHeaders() {
   const token = localStorage.getItem("todo-app-token");
   if (!token) return {};
-
   return { Authorization: `Bearer ${token}` };
 }
+
 
 // ====================== Fetch All Todos ======================
 export async function fetchTodosApi() {
