@@ -16,6 +16,7 @@ import {
   reorderTodosApi,
 } from "./api/todo";
 import { meApi } from "./api/auth";
+import Toast from "./components/Toast";
 
 // ====================== App Component ======================
 function App() {
@@ -181,6 +182,17 @@ function App() {
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
+
+  useEffect(() => {
+  if (!todoActionError) return;
+
+  const timer = setTimeout(() => {
+    setTodoActionError("");
+  }, 3000);
+
+  return () => clearTimeout(timer);
+}, [todoActionError]);
+
 
   // ====================== CRUD Handlers ======================
 
@@ -352,9 +364,10 @@ function App() {
           isActionLoading={todoActionLoading}
         />
         {apiError ? <div className="api-error">{apiError}</div> : null}
-        {todoActionError ? (
-          <div className="api-error">{todoActionError}</div>
-        ) : null}
+        <Toast
+          message={todoActionError}
+          onClose={() => setTodoActionError("")}
+        />
 
         <div className="list-item">
           {loading ? (

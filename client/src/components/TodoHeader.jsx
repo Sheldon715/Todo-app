@@ -51,7 +51,7 @@ function TodoHeader({
               onChange={handleChange}
               type="text"
               value={inputValue}
-              placeholder="Create a new todo..."
+              placeholder={isActionLoading ? "Processing..." : "Create a new todo..."}
               disabled={isActionLoading}
             />
           </form>

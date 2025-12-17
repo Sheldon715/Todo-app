@@ -23,7 +23,7 @@ function TodoFooter({
           className="remove"
           onClick={() => {
             if (isActionLoading) return;
-            onClearCompleted;
+            onClearCompleted();
           }}
         >
           Clear Completed

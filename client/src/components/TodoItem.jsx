@@ -67,7 +67,8 @@ function TodoItem({
     <li
       className={`${completed ? "completed" : ""} 
         ${isDragging ? "dragging" : ""}
-        ${isDragOver ? "drop-target" : ""}`}
+        ${isDragOver ? "drop-target" : ""}
+        ${isActionLoading ? "todo-item-loading" : ""}`}
       draggable
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
