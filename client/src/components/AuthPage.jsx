@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { loginApi, registerApi } from "../api/auth";
+import googleIcon from "../assets/images/icon-google.svg";
 
 function AuthPage({ onAuthSuccess, externalMessage, onClearExternalMessage }) {
   const [mode, setMode] = useState("login");
@@ -184,7 +185,8 @@ function AuthPage({ onAuthSuccess, externalMessage, onClearExternalMessage }) {
               window.location.href = `${apiOrigin}/api/auth/google`;
             }}
           >
-            Continue with Google
+            <img src={googleIcon} alt="Google" className="auth-google-icon" />
+            <span>Continue with Google</span>
           </button>
         </form>
       </div>

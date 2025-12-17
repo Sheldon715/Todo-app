@@ -709,6 +709,19 @@ li:hover .delete-btn {
   background: #2c2f4a;
 }
 
+.auth-google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.auth-google-icon {
+  width: 18px;
+  height: 18px;
+}
+
+
 
 @media (max-width: 1024px) {
   .todo-list {

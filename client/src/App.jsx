@@ -102,7 +102,6 @@ function App() {
       if (nextEmail) {
         localStorage.setItem("todo-app-user-email", nextEmail);
       }
-      setAuthBooting(false);
     } catch (error) {
       console.error("Error fetching current user:", error);
 
@@ -112,11 +111,33 @@ function App() {
     }
   }
 
+  // ====================== Boot Auth ======================
   useEffect(() => {
-    if (!token) {
-      setAuthBooting(false);
+    async function bootAuth() {
+      if (!token) {
+        setAuthBooting(false);
+        return;
+      }
+
+      try {
+        const data = await meApi();
+        const nextUser = data?.user || null;
+        setUser(nextUser);
+
+        const nextEmail = nextUser?.email || "";
+        setUserEmail(nextEmail);
+        if (nextEmail) {
+          localStorage.setItem("todo-app-user-email", nextEmail);
+        }
+      } catch (error) {
+        handleLogout("Session expired. Please log in again.");
+      } finally {
+        setAuthBooting(false);
+      }
     }
-  }, [token]);
+
+    bootAuth();
+  }, []);
 
   // ====================== Google OAuth Callback ======================
   useEffect(() => {
@@ -142,7 +163,6 @@ function App() {
   // Initial fetch
   useEffect(() => {
     if (!isAuthenticated) return;
-    loadMe();
     loadTodos();
   }, [isAuthenticated]);
 
