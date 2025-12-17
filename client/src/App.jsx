@@ -63,7 +63,6 @@ function App() {
     setLoading(false);
     setAuthMessage(reasonMessage);
     setApiError("");
-    setAuthBooting(false);
   }
 
   // ====================== Load Todos ======================
