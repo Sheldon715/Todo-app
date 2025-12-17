@@ -33,6 +33,8 @@ function App() {
   );
   const [authBooting, setAuthBooting] = useState(true);
   const [authMessage, setAuthMessage] = useState("");
+  const [todoActionLoading, setTodoActionLoading] = useState(false);
+  const [todoActionError, setTodoActionError] = useState("");
 
   // ====================== Auth Handlers ======================
   function handleAuthSuccess(authResult) {
@@ -87,7 +89,18 @@ function App() {
       setLoading(false);
     }
   }
+  // ====================== API Todos Error ======================
+  function handleTodoApiError(error, fallbackMessage) {
+    if (error?.status === 401) {
+      handleLogout("Session expired. Please log in again.");
+      return true;
+    }
 
+    setTodoActionError(
+      error?.message || fallbackMessage || "Something went wrong."
+    );
+    return true;
+  }
 
   // ====================== Boot Auth ======================
   useEffect(() => {
@@ -173,11 +186,16 @@ function App() {
 
   // Add new todo
   async function addTodo(inputText) {
+    setTodoActionLoading(true);
+    setTodoActionError("");
+
     try {
       const createTodo = await createTodoApi(inputText);
       setTodos((prev) => [...prev, createTodo]);
     } catch (error) {
-      console.error("Error createing todo:", error);
+      handleTodoApiError(error, "Failed to add todo.");
+    } finally {
+      setTodoActionLoading(false);
     }
   }
 
@@ -186,34 +204,49 @@ function App() {
     const current = todos.find((todo) => todo.id === id);
     if (!current) return;
 
-    const nextCompleted = !current.completed;
+    setTodoActionLoading(true);
+    setTodoActionError("");
 
     try {
-      const updated = await updateTodoApi(id, { completed: nextCompleted });
+      const updated = await updateTodoApi(id, {
+        completed: !current.completed,
+      });
 
       setTodos((prev) => prev.map((todo) => (todo.id === id ? updated : todo)));
     } catch (error) {
-      console.error("Error toggle todo:", error);
+      handleTodoApiError(error, "Failed to update todo.");
+    } finally {
+      setTodoActionLoading(false);
     }
   }
 
   // Clear completed todos
   async function clearCompleted() {
+    setTodoActionLoading(true);
+    setTodoActionError("");
+
     try {
       await clearCompletedApi();
       loadTodos();
     } catch (error) {
-      console.error("Error clear completed todo:", error);
+      handleTodoApiError(error, "Failed to clear completed todos.");
+    } finally {
+      setTodoActionLoading(false);
     }
   }
 
   // Delete todo
   async function handleDelete(id) {
+    setTodoActionLoading(true);
+    setTodoActionError("");
+
     try {
       await deleteTodoApi(id);
       setTodos((prev) => prev.filter((todo) => todo.id !== id));
     } catch (error) {
-      console.error("Error delete todo:", error);
+      handleTodoApiError(error, "Failed to delete todo:");
+    } finally {
+      setTodoActionLoading(false);
     }
   }
 
@@ -224,7 +257,7 @@ function App() {
     try {
       await reorderTodosApi(orderedIds);
     } catch (error) {
-      console.error("Error saving todos order:", error);
+      handleTodoApiError(error, "Failed to save todo order.");
     }
   }
 
@@ -316,8 +349,13 @@ function App() {
           onToggleTheme={toggleTheme}
           onLogout={handleLogout}
           userEmail={user?.email || ""}
+          isActionLoading={todoActionLoading}
         />
         {apiError ? <div className="api-error">{apiError}</div> : null}
+        {todoActionError ? (
+          <div className="api-error">{todoActionError}</div>
+        ) : null}
+
         <div className="list-item">
           {loading ? (
             <div className="todo-card loading-card">Loading todos...</div>
@@ -328,6 +366,7 @@ function App() {
               onReorder={handleReorder}
               onDelete={handleDelete}
               showInput={false}
+              isActionLoading={todoActionLoading}
             />
           )}
           <TodoFooter
@@ -335,6 +374,7 @@ function App() {
             filter={filter}
             setFilter={setFilter}
             onClearCompleted={clearCompleted}
+            isActionLoading={todoActionLoading}
           />
         </div>
         <div className="mobile-filter-card">
