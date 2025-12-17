@@ -9,6 +9,25 @@ function getAuthHeaders() {
   return { Authorization: `Bearer ${token}` };
 }
 
+// ====================== Response Helper ======================
+async function handleJsonResponse(res) {
+  let data = null;
+
+  try {
+    data = await res.json();
+  } catch {
+  }
+
+  if (!res.ok) {
+    const message = data?.error || data?.message || `Request failed: ${res.status}`;
+    const error = new Error(message);
+    error.status = res.status;
+    throw error;
+  }
+
+  return data;
+}
+
 
 // ====================== Fetch All Todos ======================
 export async function fetchTodosApi() {
@@ -18,17 +37,7 @@ export async function fetchTodosApi() {
     },
   });
 
-  if (!res.ok) {
-    const message = `Failed to fetch todos: ${res.status}`;
-    console.error(message);
-
-    const error = new Error(message);
-    error.status = res.status;
-    throw error;
-  }
-
-  const data = await res.json();
-  return data;
+  return handleJsonResponse(res);
 }
 
 // ====================== Create Todo ======================
@@ -44,14 +53,7 @@ export async function createTodoApi(text) {
     body: JSON.stringify({ text: trimmed }),
   });
 
-  if (!res.ok) {
-    const message = `Failed to create todo: ${res.status}`;
-    console.error(message);
-    throw new Error(message);
-  }
-
-  const createdTodo = await res.json();
-  return createdTodo;
+  return handleJsonResponse(res);
 }
 
 // ====================== Update Todo ======================
@@ -62,14 +64,7 @@ export async function updateTodoApi(id, partial) {
     body: JSON.stringify(partial),
   });
 
-  if (!res.ok) {
-    const message = `Failed to update todo ${id}: ${res.status}`;
-    console.error(message);
-    throw new Error(message);
-  }
-
-  const updated = await res.json();
-  return updated;
+  return handleJsonResponse(res);
 }
 
 // ====================== Delete Todo ======================
@@ -79,13 +74,7 @@ export async function deleteTodoApi(id) {
     headers: { ...getAuthHeaders() },
   });
 
-  if (!res.ok) {
-    const message = `Failed to delete todo ${id}: ${res.status}`;
-    console.error(message);
-    throw new Error(message);
-  }
-
-  return;
+  await handleJsonResponse(res);
 }
 
 // ====================== Clear Completed ======================
@@ -95,14 +84,7 @@ export async function clearCompletedApi() {
     headers: { ...getAuthHeaders() },
   });
 
-  if (!res.ok) {
-    const message = `Failed to clear completed todos: ${res.status}`;
-    console.error(message);
-    throw new Error(message);
-  }
-
-  const data = await res.json();
-  return data;
+  return handleJsonResponse(res);
 }
 
 // ====================== Reorder Todos ======================
@@ -113,12 +95,5 @@ export async function reorderTodosApi(orderIds) {
     body: JSON.stringify({ orderIds }),
   });
 
-  if (!res.ok) {
-    const message = `Failed to reorder todo: ${res.status}`;
-    console.error(message);
-    throw new Error(message);
-  }
-
-  const data = await res.json();
-  return data;
+  return handleJsonResponse(res);
 }
