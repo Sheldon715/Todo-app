@@ -150,10 +150,40 @@ app.get(
 
     const clientBaseUrl =
       process.env.CLIENT_BASE_URL || "http://localhost:5173";
-    const redirectUrl = `${clientBaseUrl}/?token=${token}`;
+    const emailParam = user?.email
+      ? `&email=${encodeURIComponent(user.email)}`
+      : "";
+    const redirectUrl = `${clientBaseUrl}/?token=${token}${emailParam}`;
     return res.redirect(redirectUrl);
   }
 );
+
+// ====================== Auth: Me ======================
+app.get("/api/auth/me", authMiddleware, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT id, email, created_at FROM users WHERE id = $1",
+      [req.userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const user = result.rows[0];
+
+    return res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+        createdAt: user.created_at,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching current user:", error);
+    return res.status(500).json({ error: "Failed to fetch current user" });
+  }
+});
 
 // ====================== GET: Fetch All Todos ======================
 app.get("/api/todos", authMiddleware, async (req, res) => {

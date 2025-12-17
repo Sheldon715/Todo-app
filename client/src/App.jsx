@@ -14,6 +14,7 @@ import {
   deleteTodoApi,
   clearCompletedApi,
   reorderTodosApi,
+  meApi,
 } from "./api/todo";
 
 // ====================== App Component ======================
@@ -83,15 +84,45 @@ function App() {
     }
   }
 
+  // ====================== Load Current User ======================
+  async function loadMe() {
+    if (!isAuthenticated) return;
+
+    try {
+      const data = await meApi();
+      const nextUser = data?.user || null;
+      setUser(nextUser);
+
+      const nextEmail = nextUser?.email || "";
+      setUserEmail(nextEmail);
+      if (nextEmail) {
+        localStorage.setItem("todo-app-user-email", nextEmail);
+      }
+    } catch (error) {
+      console.error("Error fetching current user:", error);
+
+      if (error.status === 401) {
+        handleLogout();
+      }
+    }
+  }
+
   // ====================== Google OAuth Callback ======================
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get("token");
+    const urlEmail = params.get("email");
 
     if (!urlToken) return;
 
     localStorage.setItem("todo-app-token", urlToken);
     setToken(urlToken);
+
+    if (urlEmail) {
+      localStorage.setItem("todo-app-user-email", urlEmail);
+      setUserEmail(urlEmail);
+      setUser({ email: urlEmail });
+    }
 
     // Clean URL (remove ?token=...)
     window.history.replaceState({}, document.title, window.location.pathname);
@@ -100,6 +131,7 @@ function App() {
   // Initial fetch
   useEffect(() => {
     if (!isAuthenticated) return;
+    loadMe();
     loadTodos();
   }, [isAuthenticated]);
 

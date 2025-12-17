@@ -44,3 +44,22 @@ export async function loginApi(email, password) {
   return handleJsonResponse(res);
 }
 
+// ====================== Auth Helpers ======================
+function getAuthHeaders() {
+  const token = localStorage.getItem("todo-app-token");
+  if (!token) return {};
+  return { Authorization: `Bearer ${token}` };
+}
+
+// ====================== Auth APIs ======================
+export async function meApi() {
+  const res = await fetch(`${API_BASE_URL}/auth/me`, {
+    headers: {
+      ...getAuthHeaders(),
+    },
+  });
+
+  return handleJsonResponse(res);
+}
+
+
