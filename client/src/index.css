@@ -433,6 +433,13 @@ li:hover .delete-btn {
   background: rgba(255, 0, 0, 0.08);
 }
 
+.auth-page {
+  position: relative;
+  z-index: 20;
+  min-height: 300px;
+}
+
+
 .auth-card {
   background: transparent;
   box-shadow: none;
@@ -804,6 +811,7 @@ li:hover .delete-btn {
       url(./assets/images/bg-mobile-light.jpg);
     background-size: cover;
     background-position: center;
+    z-index: 0;
   }
 
   .dark-background {
@@ -811,6 +819,7 @@ li:hover .delete-btn {
     background: url(./assets/images/bg-mobile-dark.jpg);
     background-size: cover;
     background-position: center;
+    z-index: 0;
   }
 
   .todo-list {
