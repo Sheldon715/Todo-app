@@ -14,8 +14,8 @@ import {
   deleteTodoApi,
   clearCompletedApi,
   reorderTodosApi,
-  meApi,
 } from "./api/todo";
+import { meApi } from "./api/auth";
 
 // ====================== App Component ======================
 function App() {
