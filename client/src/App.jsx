@@ -227,7 +227,7 @@ function App() {
 
     try {
       await clearCompletedApi();
-      loadTodos();
+      await loadTodos();
     } catch (error) {
       handleTodoApiError(error, "Failed to clear completed todos.");
     } finally {
@@ -244,7 +244,7 @@ function App() {
       await deleteTodoApi(id);
       setTodos((prev) => prev.filter((todo) => todo.id !== id));
     } catch (error) {
-      handleTodoApiError(error, "Failed to delete todo:");
+      handleTodoApiError(error, "Failed to delete todo.");
     } finally {
       setTodoActionLoading(false);
     }

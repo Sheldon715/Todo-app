@@ -8,6 +8,7 @@ function TodoHeader({
   theme,
   onToggleTheme,
   showInput = true,
+  isActionLoading,
 }) {
   const [inputValue, setInputValue] = useState("");
 
@@ -18,6 +19,8 @@ function TodoHeader({
 
   function handleSubmit(event) {
     event.preventDefault();
+    if (isActionLoading) return;
+
     if (inputValue) {
       if (typeof onAdd === "function") {
         onAdd(inputValue);
@@ -49,6 +52,7 @@ function TodoHeader({
               type="text"
               value={inputValue}
               placeholder="Create a new todo..."
+              disabled={isActionLoading}
             />
           </form>
         </div>
@@ -61,6 +65,7 @@ TodoHeader.propTypes = {
   theme: PropTypes.string.isRequired,
   onToggleTheme: PropTypes.func.isRequired,
   showInput: PropTypes.bool,
+  isActionLoading: PropTypes.bool,
 };
 
 export default TodoHeader;

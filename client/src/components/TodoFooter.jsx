@@ -2,7 +2,13 @@ import React from "react";
 import PropTypes from "prop-types";
 import FilterTabs from "./FilterTab";
 
-function TodoFooter({ itemLeft, filter, setFilter, onClearCompleted }) {
+function TodoFooter({
+  itemLeft,
+  filter,
+  setFilter,
+  onClearCompleted,
+  isActionLoading,
+}) {
   return (
     <>
       {" "}
@@ -13,7 +19,13 @@ function TodoFooter({ itemLeft, filter, setFilter, onClearCompleted }) {
           <FilterTabs filter={filter} setFilter={setFilter} />
         </div>
 
-        <div className="remove" onClick={onClearCompleted}>
+        <div
+          className="remove"
+          onClick={() => {
+            if (isActionLoading) return;
+            onClearCompleted;
+          }}
+        >
           Clear Completed
         </div>
       </div>
@@ -26,6 +38,7 @@ TodoFooter.propTypes = {
   filter: PropTypes.string.isRequired,
   setFilter: PropTypes.func.isRequired,
   onClearCompleted: PropTypes.func.isRequired,
+  isActionLoading: PropTypes.bool,
 };
 
 export default TodoFooter;

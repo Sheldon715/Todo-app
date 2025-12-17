@@ -11,6 +11,7 @@ function TodoItem({
   onToggle,
   onReorder,
   onDelete,
+  isActionLoading,
 }) {
   // ====================== Local State ======================
   const [isDragging, setIsDragging] = useState(false);
@@ -79,13 +80,24 @@ function TodoItem({
         <input
           type="checkbox"
           checked={completed}
-          onChange={() => onToggle(id)}
+          onChange={() => {
+            if (isActionLoading) return;
+            onToggle(id);
+          }}
+          disabled={isActionLoading}
         />
         <span className="custom-checkbox"></span>
         <span className="text-drag">{text}</span>
       </label>
 
-      <button className="delete-btn" onClick={() => onDelete(id)}>
+      <button
+        className="delete-btn"
+        onClick={() => {
+          if (isActionLoading) return;
+          onDelete(id);
+        }}
+        disabled={isActionLoading}
+      >
         <img src={iconCross} alt="delete" />
       </button>
     </li>
@@ -100,6 +112,7 @@ TodoItem.propTypes = {
   onToggle: PropTypes.func.isRequired,
   onReorder: PropTypes.func.isRequired,
   onDelete: PropTypes.func,
+  isActionLoading: PropTypes.bool,
 };
 
 export default TodoItem;
