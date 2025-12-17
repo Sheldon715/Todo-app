@@ -146,7 +146,7 @@ app.get(
     failureRedirect: "/login",
   }),
   (req, res) => {
-    const { token } = req.user;
+    const { token, user } = req.user;
 
     const clientBaseUrl =
       process.env.CLIENT_BASE_URL || "http://localhost:5173";
