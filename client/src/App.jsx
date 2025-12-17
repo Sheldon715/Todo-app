@@ -88,28 +88,6 @@ function App() {
     }
   }
 
-  // ====================== Load Current User ======================
-  async function loadMe() {
-    if (!isAuthenticated) return;
-
-    try {
-      const data = await meApi();
-      const nextUser = data?.user || null;
-      setUser(nextUser);
-
-      const nextEmail = nextUser?.email || "";
-      setUserEmail(nextEmail);
-      if (nextEmail) {
-        localStorage.setItem("todo-app-user-email", nextEmail);
-      }
-    } catch (error) {
-      console.error("Error fetching current user:", error);
-
-      if (error.status === 401) {
-        handleLogout("Session expired. Please log in again.");
-      }
-    }
-  }
 
   // ====================== Boot Auth ======================
   useEffect(() => {
@@ -324,7 +302,7 @@ function App() {
           <button
             type="button"
             className="top-right-logout"
-            onClick={handleLogout}
+            onClick={() => handleLogout()}
           >
             Logout
           </button>
