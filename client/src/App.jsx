@@ -31,6 +31,8 @@ function App() {
   const [userEmail, setUserEmail] = useState(
     () => localStorage.getItem("todo-app-user-email") || ""
   );
+  const [authBooting, setAuthBooting] = useState(true);
+  const [authMessage, setAuthMessage] = useState("");
 
   // ====================== Auth Handlers ======================
   function handleAuthSuccess(authResult) {
@@ -51,7 +53,7 @@ function App() {
     }
   }
 
-  function handleLogout() {
+  function handleLogout(reasonMessage = "") {
     localStorage.removeItem("todo-app-token");
     localStorage.removeItem("todo-app-user-email");
     setToken("");
@@ -59,6 +61,9 @@ function App() {
     setUserEmail("");
     setTodos([]);
     setLoading(false);
+    setAuthMessage(reasonMessage);
+    setApiError("");
+    setAuthBooting(false);
   }
 
   // ====================== Load Todos ======================
@@ -75,7 +80,7 @@ function App() {
       console.error("Error fetching todos:", error);
 
       if (error.status === 401) {
-        handleLogout();
+        handleLogout("Session expired. Please log in again.");
       } else {
         setApiError(error.message || "Failed to load todos.");
       }
@@ -98,14 +103,21 @@ function App() {
       if (nextEmail) {
         localStorage.setItem("todo-app-user-email", nextEmail);
       }
+      setAuthBooting(false);
     } catch (error) {
       console.error("Error fetching current user:", error);
 
       if (error.status === 401) {
-        handleLogout();
+        handleLogout("Session expired. Please log in again.");
       }
     }
   }
+
+  useEffect(() => {
+    if (!token) {
+      setAuthBooting(false);
+    }
+  }, [token]);
 
   // ====================== Google OAuth Callback ======================
   useEffect(() => {
@@ -252,6 +264,17 @@ function App() {
   const itemLeft = todos.filter((todo) => !todo.completed).length;
 
   // ====================== Render ======================
+  if (authBooting) {
+    return (
+      <div className={`app ${theme}`}>
+        <HeaderBackground theme={theme} />
+        <div className="todo-list">
+          <div className="todo-card loading-card">Checking session...</div>
+        </div>
+      </div>
+    );
+  }
+
   return !isAuthenticated ? (
     <div className={`app ${theme}`}>
       <HeaderBackground theme={theme} />
@@ -263,7 +286,11 @@ function App() {
           showInput={false}
         />
 
-        <AuthPage onAuthSuccess={handleAuthSuccess} />
+        <AuthPage
+          onAuthSuccess={handleAuthSuccess}
+          externalMessage={authMessage}
+          onClearExternalMessage={() => setAuthMessage("")}
+        />
       </div>
     </div>
   ) : (

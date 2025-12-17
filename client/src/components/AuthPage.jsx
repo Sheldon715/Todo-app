@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { loginApi, registerApi } from "../api/auth";
 
-function AuthPage({ onAuthSuccess }) {
+function AuthPage({ onAuthSuccess, externalMessage, onClearExternalMessage }) {
   const [mode, setMode] = useState("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,10 +17,14 @@ function AuthPage({ onAuthSuccess }) {
     setPassword("");
     setMessage("");
     setMessageType("");
+
+    onClearExternalMessage?.();
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
+
+    onClearExternalMessage?.();
 
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
@@ -100,6 +104,9 @@ function AuthPage({ onAuthSuccess }) {
           {message ? (
             <div className={`auth-message ${messageType}`}>{message}</div>
           ) : null}
+          {!message && externalMessage ? (
+            <div className="auth-message error">{externalMessage}</div>
+          ) : null}
           <div className="auth-input-card">
             <div className="auth-row">
               <label className="auth-label">
@@ -108,7 +115,10 @@ function AuthPage({ onAuthSuccess }) {
                   type="email"
                   className="auth-input"
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    onClearExternalMessage?.();
+                  }}
                   placeholder="you@example.com"
                   disabled={submitting}
                 />
@@ -122,7 +132,10 @@ function AuthPage({ onAuthSuccess }) {
                   type="password"
                   className="auth-input"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    onClearExternalMessage?.();
+                  }}
                   placeholder="••••••••"
                   disabled={submitting}
                 />
