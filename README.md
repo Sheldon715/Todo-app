@@ -14,7 +14,7 @@
 
 ## 在线地址
 
-- **前端（Vercel）**：`https://todo-app-fronted.vercel.app`
+- **前端（Vercel）**：`https://todo-app-frontend-topaz-rho.vercel.app`
 - **后端（Vercel）**：`https://todo-app-backend-topaz-rho.vercel.app`
 
 > 说明：访问后端根路径 `/` 可能显示 `Cannot GET /`，这是正常的（后端只提供 `/api`）。
@@ -56,7 +56,7 @@
 ### 前端
 
 - React + Vite
-- Tailwind CSS（见 `client/tailwind.config.js` / `client/postcss.config.js`）
+- HTML + CSS + JavaScript
 
 ### 后端
 
@@ -302,5 +302,6 @@ npm run dev
 ## License
 
 MIT
+
 
 
